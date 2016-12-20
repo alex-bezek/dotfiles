@@ -1,0 +1,15 @@
+username: as027811
+electric_commander:
+  http_options:
+    :verify: false
+  username: as027811
+  url: https://commander.cerner.com:8443
+github:
+  api_url: http://github.cerner.com/api/v3
+  username: as027811
+jira:
+  username: as027811
+ucern:
+  username: as027811
+wiki:
+  username: as027811

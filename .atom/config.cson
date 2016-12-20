@@ -1,0 +1,63 @@
+"*":
+  "activate-power-mode":
+    autoToggle: false
+  "atom-beautify":
+    general:
+      _analyticsUserId: "420649ba-e9ec-4e5d-95d4-2a5506b23199"
+    json:
+      beautify_on_save: true
+      indent_size: 2
+      keep_array_indentation: true
+      preserve_newlines: false
+    ruby:
+      default_beautifier: "Ruby Beautify"
+      indent_size: 2
+  core:
+    disabledPackages: [
+      "seti-icons"
+      "file-type-icons"
+      "minimap"
+      "vim-mode"
+      "linter-haml"
+    ]
+    projectHome: "/Users/as027811/atom"
+    telemetryConsent: "limited"
+    themes: [
+      "seti-ui"
+      "one-dark-syntax"
+    ]
+  editor:
+    invisibles: {}
+    preferredLineLength: 120
+    showIndentGuide: true
+    softTabs: false
+    tabType: "soft"
+  "exception-reporting":
+    userId: "273b23ac-66b3-1cba-502d-c93d3c44b495"
+  fonts:
+    fontFamily: "Roboto Mono Medium"
+  linter:
+    errorPanelHeight: 26
+  "linter-rubocop": {}
+  "seti-syntax": {}
+  "seti-ui":
+    compactView: true
+    disableAnimations: true
+    fileIcons: false
+  "terminal-plus":
+    style: {}
+  "tree-view": {}
+  wakatime:
+    apikey: "Saved in your ~/.wakatime.cfg file"
+  "wakatime-hidden":
+    lastInit: 1482193451
+  welcome:
+    showOnStartup: false
+".erb.html.text":
+  editor:
+    preferredLineLength: 120
+".ruby.source":
+  editor:
+    preferredLineLength: 120
+"linter-rails-best-practices":
+  executablePath: "/Users/as027811/.atom/packages"
