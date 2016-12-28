@@ -7,5 +7,3 @@
 .bundle/cache/**/*
 .chef/cache/**/*
 .chef/*.pem
-
-.pryrcs

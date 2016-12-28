@@ -68,11 +68,6 @@ plugins=(
   web-search
 )
 
-# User configuration
-
-export PATH="/usr/local/bin:/Users/as027811/.rvm/gems/ruby-2.2.2/bin:/Users/as027811/.rvm/gems/ruby-2.2.2@global/bin:/Users/as027811/.rvm/rubies/ruby-2.2.2/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/as027811/.rvm/bin"
-# export MANPATH="/usr/local/man:$MANPATH"
-
 source $ZSH/oh-my-zsh.sh
 
 # You may need to manually set your language environment
@@ -97,18 +92,17 @@ source $ZSH/oh-my-zsh.sh
 # For a full list of active aliases, run `alias`.
 #
 # Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+alias zshconfig="atom ~/.zshrc"
+alias ohmyzsh="atom ~/.oh-my-zsh"
 
 
 eval "$(rbenv init -)"
 # eval $(docker-machine env default)
-alias be='bundle exec'
 
-alias last_commit="echo $(echo $(git config --get remote.origin.url) | rev | cut -c 5- | rev)/commit/$(git rev-parse HEAD)"
-alias num_commits="git log master..$(git rev-parse --abbrev-ref HEAD) --pretty=oneline | wc -l"
-alias remove_containers="docker rm $(docker ps -a -q)"
-alias remove_images="docker rmi -f $(docker images | grep "^<none>" | awk "{print $3}")"
+alias last_commit='echo $(echo $(git config --get remote.origin.url) | rev | cut -c 5- | rev)/commit/$(git rev-parse HEAD)'
+alias num_commits='git log master..$(git rev-parse --abbrev-ref HEAD) --pretty=oneline | wc -l'
+alias remove_containers='docker rm $(docker ps -a -q)'
+alias remove_images='docker rmi -f $(docker images | grep "^<none>" | awk "{print $3}")'
 
-export NVM_DIR="/Users/as027811/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+# export NVM_DIR="/Users/as027811/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm

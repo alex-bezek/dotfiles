@@ -1,0 +1,31 @@
+[user]
+	name = Alex Bezek
+	email = alex.bezek@cerner.com
+[color]
+	ui = auto
+[core]
+	autocrlf = input
+	editor = atom --wait
+	excludesfile = /Users/as027811/.gitignore_global
+[credential]
+	helper = osxkeychain
+[push]
+	default = simple
+[mergetool "sublime"]
+	cmd = subl -w $MERGED
+	trustExitCode = false
+[merge]
+	tool = bcomp
+[alias]
+       lg1 = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+       lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
+       lg = !"git lg1"
+       
+[diff]
+	tool = bcomp
+[mergetool]
+	bcomp = trustExitCode
+[filter "lfs"]
+	clean = git-lfs clean %f
+	smudge = git-lfs smudge %f
+	required = true

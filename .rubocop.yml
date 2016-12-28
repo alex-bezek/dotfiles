@@ -1,0 +1,9 @@
+# These rules below override the default rules provided by rubocop.
+
+# Maximum line length of 120 chars
+LineLength:
+  Max: 120
+
+# Avoid methods longer than 30 lines of code
+MethodLength:
+  Max: 10
