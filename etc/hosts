@@ -1,0 +1,15 @@
+##
+# Host Database
+#
+# localhost is used to configure the loopback interface
+# when the system is booting.  Do not change this entry.
+##
+127.0.0.1	localhost localhealthelife.com confluent
+255.255.255.255	broadcasthost
+::1             localhost
+170.71.206.14   chef.spherestage.net
+170.71.206.14   spork.spherestage.net
+192.168.99.100   dockerhost
+10.190.191.178  openstack_dockerhost
+127.0.0.1 localrwellness.com
+127.0.0.1 api.localiqhealth.com
