@@ -13,3 +13,12 @@
 10.190.191.178  openstack_dockerhost
 127.0.0.1 localrwellness.com
 127.0.0.1 api.localiqhealth.com
+127.0.0.1 localconsumer.com
+127.0.0.1 localconsumer2.com
+
+10.190.189.66 dev-app-proxy
+10.190.189.64 dev-svc-proxy
+104.170.60.28 cert-app-proxy
+104.170.60.30 cert-svc-proxy
+104.170.60.13 stage-app-proxy
+104.170.60.15 stage-svc-proxy

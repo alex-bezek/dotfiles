@@ -46,13 +46,23 @@
     fileIcons: false
   "terminal-plus":
     style: {}
+  "todo-show":
+    findTheseTodos: [
+      "FIXME"
+      "TODO"
+      "IDEA"
+      "HACK"
+      "REVIEW"
+    ]
   "tree-view": {}
   wakatime:
     apikey: "Saved in your ~/.wakatime.cfg file"
   "wakatime-hidden":
-    lastInit: 1482193451
+    lastInit: 1484276617
   welcome:
     showOnStartup: false
+  whitespace:
+    ignoreWhitespaceOnCurrentLine: false
 ".erb.html.text":
   editor:
     preferredLineLength: 120

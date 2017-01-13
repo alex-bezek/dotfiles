@@ -7,3 +7,6 @@
 .bundle/cache/**/*
 .chef/cache/**/*
 .chef/*.pem
+
+.atom/recovery/
+erl_crash.dump
