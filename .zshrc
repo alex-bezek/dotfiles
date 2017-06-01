@@ -104,5 +104,20 @@ alias num_commits='git log master..$(git rev-parse --abbrev-ref HEAD) --pretty=o
 alias remove_containers='docker rm $(docker ps -a -q)'
 alias remove_images='docker rmi -f $(docker images | grep "^<none>" | awk "{print $3}")'
 
-# export NVM_DIR="/Users/as027811/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+export NVM_DIR="/Users/as027811/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+
+export PATH="$HOME/.yarn/bin:$PATH"
+
+# place this after nvm initialization!
+autoload -U add-zsh-hook
+load-nvmrc() {
+  if [[ -f .nvmrc && -r .nvmrc ]]; then
+    nvm use
+  elif [[ $(nvm version) != $(nvm version default)  ]]; then
+    echo "Reverting to nvm default version"
+    nvm use default
+  fi
+}
+add-zsh-hook chpwd load-nvmrc
+load-nvmrc
