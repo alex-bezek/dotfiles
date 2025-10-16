@@ -1,123 +1,200 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# Git SSH (customize per environment)
+if [[ -f "$HOME/.ssh/github_key" ]]; then
+  export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/github_key"
+fi
+
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/as027811/.oh-my-zsh
+export ZSH="$HOME/.oh-my-zsh"
 
-# Set name of the theme to load.
-# Look in ~/.oh-my-zsh/themes/
-# Optionally, if you set this to "random", it'll load a random theme each
-# time that oh-my-zsh is loaded.
-ZSH_THEME="robbyrussell"
+# Editor: Use 'vi' in Codespaces/EC2, 'code' on macOS
+if [[ -n "$CODESPACES" ]] || [[ ! -x "$(command -v code)" ]]; then
+  export EDITOR='nvim'
+  export KUBE_EDITOR='nvim'
+else
+  export EDITOR='code'
+  export KUBE_EDITOR='code --wait'
+fi
 
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
+export TERM="xterm-256color"
 
-# Uncomment the following line to use hyphen-insensitive completion. Case
-# sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
+# Company-specific (customize as needed)
+export NGROK_EMAIL="${NGROK_EMAIL:-alex@ngrok.com}"
+export NGROK_LOGS_PAGER="${NGROK_LOGS_PAGER:-lnav}"
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
+export KUBECONFIG=$HOME/.kube/config
 
-# Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
+[ -f $HOME/fubectl.source ] && source $HOME/fubectl.source
 
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
+export AWS_PAGER=''
+export AWS_PROFILE="${AWS_PROFILE:-default}"
 
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
+# Set name of the theme to load --- if set to "random", it will
+# load a random theme each time oh-my-zsh is loaded, in which case,
+# to know which specific one was loaded, run: echo $RANDOM_THEME
+# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  bundler
-  common-aliases
-  docker
-  gem
-  git
-  git-extras
-  knife
-  last-working-dir
-  node
-  npm
-  rails
-  ruby
+  jsontools
   sudo
-  svn
-  vagrant
-  web-search
+  autojump
+  kubectl
+  last-working-dir
+  tmux
+  zsh-autosuggestions
+  zsh-syntax-highlighting
 )
 
 source $ZSH/oh-my-zsh.sh
 
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
-
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-
-# ssh
-# export SSH_KEY_PATH="~/.ssh/dsa_id"
-
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-alias zshconfig="atom ~/.zshrc"
-alias ohmyzsh="atom ~/.oh-my-zsh"
-
-
-eval "$(rbenv init -)"
-# eval $(docker-machine env default)
-
-alias last_commit='echo $(echo $(git config --get remote.origin.url) | rev | cut -c 5- | rev)/commit/$(git rev-parse HEAD)'
-alias num_commits='git log master..$(git rev-parse --abbrev-ref HEAD) --pretty=oneline | wc -l'
-alias remove_containers='docker rm $(docker ps -a -q)'
-alias remove_images='docker rmi -f $(docker images | grep "^<none>" | awk "{print $3}")'
-
-export NVM_DIR="/Users/as027811/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-
-export PATH="$HOME/.yarn/bin:$PATH"
-
-# place this after nvm initialization!
-autoload -U add-zsh-hook
-load-nvmrc() {
-  if [[ -f .nvmrc && -r .nvmrc ]]; then
-    nvm use
-  elif [[ $(nvm version) != $(nvm version default)  ]]; then
-    echo "Reverting to nvm default version"
-    nvm use default
-  fi
+ngrok_environment() {
+  echo -n "NGROK $NGROK_ENV"
 }
-add-zsh-hook chpwd load-nvmrc
-load-nvmrc
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+POWERLEVEL9K_INSTANT_PROMPT=quiet
+
+# http://nerdfonts.com/#cheat-lssheet
+POWERLEVEL9K_CUSTOM_FIRE="echo -n '\ue780'"
+# POWERLEVEL9K_CUSTOM_FIRE_BACKGROUND="blue"
+POWERLEVEL9K_CUSTOM_FIRE_FOREGROUND="red"
+
+# Sets new icons on the power bar (triangle by default)
+# Need to see if i can find a way to only apply this on the newline
+# POWERLEVEL9K_LEFT_SEGMENT_SEPARATOR=$'\uE0B1'
+# POWERLEVEL9K_RIGHT_SEGMENT_SEPARATOR=$'\uE0B3'
+POWERLEVEL9K_VCS_BRANCH_ICON=$'\ue727 '
+POWERLEVEL9K_LEFT_SUBSEGMENT_SEPARATOR=''
+
+POWERLEVEL9K_COMMAND_EXECUTION_TIME_THRESHOLD='0'
+# POWERLEVEL9K_COMMAND_EXECUTION_TIME_BACKGROUND='black'
+# POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND='blue'
+
+# POWERLEVEL9K_KUBECONTEXT_BACKGROUND='005'
+# POWERLEVEL9K_KUBECONTEXT_FOREGROUND='000'
+
+
+# POWERLEVEL9K_STATUS_ERROR_BACKGROUND='blue'
+# POWERLEVEL9K_STATUS_OK_BACKGROUND='blue'
+# POWERLEVEL9K_STATUS_ERROR_FOREGROUND='red'
+# POWERLEVEL9K_STATUS_OK_FOREGROUND='green3'
+
+
+POWERLEVEL9K_CUSTOM_NGROK="ngrok_environment"
+# POWERLEVEL9K_CUSTOM_NGROK_BACKGROUND='blue'
+# POWERLEVEL9K_CUSTOM_NGROK_FOREGROUND='darkgreen'
+
+
+POWERLEVEL9K_GO_VERSION_BACKGROUND='021'
+# POWERLEVEL9K_GO_VERSION_FOREGROUND='white'
+
+# POWERLEVEL9K_VCS_CLEAN_FOREGROUND='green'
+# POWERLEVEL9K_VCS_CLEAN_BACKGROUND='blue'
+# POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND='green3'
+# POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND='blue'
+# POWERLEVEL9K_VCS_MODIFIED_FOREGROUND='orangered1'
+# POWERLEVEL9K_VCS_MODIFIED_BACKGROUND='blue'
+
+# POWERLEVEL9K_COMMAND_EXECUTION_TIME_BACKGROUND='blue'
+# POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND='white'
+
+# POWERLEVEL9K_BATTERY_CHARGING_BACKGROUND='lightgreen'
+# POWERLEVEL9K_BATTERY_CHARGING_FOREGROUND='black'
+# POWERLEVEL9K_BATTERY_CHARGED_BACKGROUND='green'
+# POWERLEVEL9K_BATTERY_CHARGED_FOREGROUND='black'
+# POWERLEVEL9K_BATTERY_DISCONNECTED_BACKGROUND='orangered1'
+# POWERLEVEL9K_BATTERY_DISCONNECTED_FOREGROUND='green3'
+# POWERLEVEL9K_BATTERY_LOW_BACKGROUND='lightred'
+# POWERLEVEL9K_BATTERY_LOW_FOREGROUND='green3'
+
+# POWERLEVEL9K_TIME_BACKGROUND='orangered1'
+
+
+
+unset POWERLEVEL9K_TERRAFORM_VERSION_SHOW_ON_COMMAND
+unset POWERLEVEL9K_KUBECONTEXT_SHOW_ON_COMMAND
+
+# # Customise the Powerlevel9k prompts
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
+  custom_fire
+  status
+  dir
+  vcs
+  kubecontext
+  custom_ngrok
+  go_version
+  newline
+
+  terraform
+  ssh
+  newline
+)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
+  command_execution_time
+  time
+  battery
+)
+
+function gp() {
+  git push origin $(git symbolic-ref --short HEAD)
+}
+function gc() {
+  git add .;
+  git commit -m "$@"
+}
+function ga() {
+  gc "$1"
+  gp
+}
+
+function nds() {
+  export NGROK_ENV="$1"
+}
+
+compdef kubecolor=kubectl
+complete -F __start_kubectl k
+
+alias k="kubecolor"
+alias kctx="kubectl ctx"
+alias kns="kubectl ns"
+
+alias ls='exa --color=auto --icons -la'
+alias la='exa --color=auto --icons -la'
+alias ll='exa --color=auto --icons -la'
+alias t="tree --du -h -L"
+
+alias gs='git status'
+alias gd='git diff | bat'
+alias gdt='GIT_EXTERNAL_DIFF=difft git diff'
+
+alias cat='bat'
+alias rg='batgrep'
+alias watch='watch '
+alias vi='nvim'
+
+alias f='fuck'
+
+alias b='nd go install nd'
+alias ndcf='nd config run | fx'
+alias h='history | fzf'
+
+# test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh" || true
+
+# neofetch
+
+source <(kubectl completion zsh)
+# source "/ngrok-host-shellhook"
+# source "/Users/alex/code/ngrok/.cache/ngrok-host-shellhook"
+
+eval $(thefuck --alias)
+

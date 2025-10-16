@@ -1,12 +1,17 @@
-*.cache
-.atom/.apm/*
-.atom/blob-store/**/*
-.atom/compile-cache/**/*
-.atom/packages/**/*
-.atom/storage/**/*
-.bundle/cache/**/*
-.chef/cache/**/*
-.chef/*.pem
+# Local configuration overrides
+.zshrc.local
 
-.atom/recovery/
-erl_crash.dump
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.log
+.cache/
