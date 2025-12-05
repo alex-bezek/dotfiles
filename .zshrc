@@ -75,6 +75,9 @@ ngrok_environment() {
 
 POWERLEVEL9K_INSTANT_PROMPT=quiet
 
+# Transient prompt - only show full prompt on current line
+POWERLEVEL9K_TRANSIENT_PROMPT=always
+
 # http://nerdfonts.com/#cheat-lssheet
 POWERLEVEL9K_CUSTOM_FIRE="echo -n '\ue780'"
 # POWERLEVEL9K_CUSTOM_FIRE_BACKGROUND="blue"
@@ -172,18 +175,25 @@ function nds() {
   export NGROK_ENV="$1"
 }
 
-# Kubernetes aliases (only if tools exist)
-if command -v kubecolor &> /dev/null; then
-  compdef kubecolor=kubectl
-  alias k="kubecolor"
-elif command -v kubectl &> /dev/null; then
-  alias k="kubectl"
-fi
+# Kubernetes aliases - use functions to handle late PATH setup (nix/direnv)
+k() {
+  if command -v kubecolor &> /dev/null; then
+    kubecolor "$@"
+  elif command -v kubectl &> /dev/null; then
+    kubectl "$@"
+  else
+    echo "kubectl not found in PATH" >&2
+    return 1
+  fi
+}
 
+kctx() { kubectl ctx "$@"; }
+kns() { kubectl ns "$@"; }
+
+# Setup completions if kubectl is available at shell init
 if command -v kubectl &> /dev/null; then
-  complete -F __start_kubectl k
-  alias kctx="kubectl ctx"
-  alias kns="kubectl ns"
+  source <(kubectl completion zsh)
+  compdef k=kubectl
 fi
 
 # ls aliases - prefer eza > exa > ls with colors
@@ -251,9 +261,6 @@ fi
 
 # neofetch
 
-# kubectl completion (only if kubectl exists)
-if command -v kubectl &> /dev/null; then
-  source <(kubectl completion zsh)
-fi
+
 # source "/ngrok-host-shellhook"
 # source "/Users/alex/code/ngrok/.cache/ngrok-host-shellhook"
