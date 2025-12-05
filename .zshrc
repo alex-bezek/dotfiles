@@ -176,6 +176,9 @@ function nds() {
 }
 
 # Kubernetes aliases - use functions to handle late PATH setup (nix/direnv)
+# Unset the 'k' alias from kubectl plugin before defining our function
+unalias k 2>/dev/null
+
 k() {
   if command -v kubecolor &> /dev/null; then
     kubecolor "$@"
