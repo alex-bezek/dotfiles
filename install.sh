@@ -229,15 +229,25 @@ setup_symlinks() {
 }
 
 set_zsh_default() {
-  if [[ "$SHELL" != *"zsh"* ]]; then
-    echo "🐚 Setting zsh as default shell..."
-    if command -v zsh &> /dev/null; then
-      chsh -s "$(which zsh)" || echo "⚠️  Could not set zsh as default (may need sudo)"
-    else
-      echo "⚠️  zsh not found, skipping default shell change"
-    fi
-  else
+  if [[ "$SHELL" == *"zsh"* ]]; then
     echo "✅ Zsh already default shell"
+    return
+  fi
+
+  if ! command -v zsh &> /dev/null; then
+    echo "⚠️  zsh not found, skipping default shell change"
+    return
+  fi
+
+  echo "🐚 Setting zsh as default shell..."
+  ZSH_PATH="$(which zsh)"
+
+  # In Codespaces/containers, use sudo chsh which doesn't prompt for password
+  if [[ -n "$CODESPACES" ]] || [[ -n "$REMOTE_CONTAINERS" ]] || [[ -f /.dockerenv ]]; then
+    sudo chsh -s "$ZSH_PATH" "$(whoami)" || echo "⚠️  Could not set zsh as default"
+  else
+    # On regular systems, try without sudo first
+    chsh -s "$ZSH_PATH" 2>/dev/null || echo "⚠️  Could not set zsh as default (run 'chsh -s $ZSH_PATH' manually)"
   fi
 }
 
