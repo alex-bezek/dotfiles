@@ -28,6 +28,12 @@ export TERM="xterm-256color"
 export NGROK_EMAIL="${NGROK_EMAIL:-alex@ngrok.com}"
 export NGROK_LOGS_PAGER="${NGROK_LOGS_PAGER:-lnav}"
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+
+# Linuxbrew
+if [[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
 
 export KUBECONFIG=$HOME/.kube/config
 
@@ -42,16 +48,21 @@ export AWS_PROFILE="${AWS_PROFILE:-default}"
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
+# Build plugins list dynamically based on what's available
 plugins=(
   jsontools
   sudo
-  autojump
   kubectl
   last-working-dir
   tmux
   zsh-autosuggestions
   zsh-syntax-highlighting
 )
+
+# autojump plugin only if autojump is installed
+if command -v autojump &> /dev/null; then
+  plugins+=(autojump)
+fi
 
 source $ZSH/oh-my-zsh.sh
 
@@ -161,40 +172,88 @@ function nds() {
   export NGROK_ENV="$1"
 }
 
-compdef kubecolor=kubectl
-complete -F __start_kubectl k
+# Kubernetes aliases (only if tools exist)
+if command -v kubecolor &> /dev/null; then
+  compdef kubecolor=kubectl
+  alias k="kubecolor"
+elif command -v kubectl &> /dev/null; then
+  alias k="kubectl"
+fi
 
-alias k="kubecolor"
-alias kctx="kubectl ctx"
-alias kns="kubectl ns"
+if command -v kubectl &> /dev/null; then
+  complete -F __start_kubectl k
+  alias kctx="kubectl ctx"
+  alias kns="kubectl ns"
+fi
 
-alias ls='exa --color=auto --icons -la'
-alias la='exa --color=auto --icons -la'
-alias ll='exa --color=auto --icons -la'
+# ls aliases - prefer eza > exa > ls with colors
+if command -v eza &> /dev/null; then
+  alias ls='eza --color=auto --icons -la'
+  alias la='eza --color=auto --icons -la'
+  alias ll='eza --color=auto --icons -la'
+elif command -v exa &> /dev/null; then
+  alias ls='exa --color=auto --icons -la'
+  alias la='exa --color=auto --icons -la'
+  alias ll='exa --color=auto --icons -la'
+else
+  alias ls='ls --color=auto -la'
+  alias la='ls --color=auto -la'
+  alias ll='ls --color=auto -la'
+fi
+
 alias t="tree --du -h -L"
 
 alias gs='git status'
-alias gd='git diff | bat'
-alias gdt='GIT_EXTERNAL_DIFF=difft git diff'
 
-alias cat='bat'
-alias rg='batgrep'
+# bat/batcat - Ubuntu/Debian uses 'batcat' for bat
+if command -v bat &> /dev/null; then
+  alias cat='bat'
+  alias gd='git diff | bat'
+elif command -v batcat &> /dev/null; then
+  alias cat='batcat'
+  alias gd='git diff | batcat'
+else
+  alias gd='git diff'
+fi
+
+# difft for git diff (optional)
+if command -v difft &> /dev/null; then
+  alias gdt='GIT_EXTERNAL_DIFF=difft git diff'
+fi
+
+# batgrep (only if available)
+if command -v batgrep &> /dev/null; then
+  alias rg='batgrep'
+fi
+
 alias watch='watch '
-alias vi='nvim'
 
-alias f='fuck'
+# neovim
+if command -v nvim &> /dev/null; then
+  alias vi='nvim'
+fi
+
+# thefuck (only if installed)
+if command -v thefuck &> /dev/null; then
+  alias f='fuck'
+  eval $(thefuck --alias)
+fi
 
 alias b='nd go install nd'
 alias ndcf='nd config run | fx'
-alias h='history | fzf'
+
+# fzf history (only if fzf available)
+if command -v fzf &> /dev/null; then
+  alias h='history | fzf'
+fi
 
 # test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh" || true
 
 # neofetch
 
-source <(kubectl completion zsh)
+# kubectl completion (only if kubectl exists)
+if command -v kubectl &> /dev/null; then
+  source <(kubectl completion zsh)
+fi
 # source "/ngrok-host-shellhook"
 # source "/Users/alex/code/ngrok/.cache/ngrok-host-shellhook"
-
-eval $(thefuck --alias)
-

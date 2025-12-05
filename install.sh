@@ -56,33 +56,105 @@ install_zsh_plugins() {
   fi
 }
 
-install_linux_tools() {
-  echo "📦 Installing Linux tools..."
+install_linux_tools_apt() {
+  echo "📦 Installing Linux tools via apt..."
 
-  # Check if we have sudo access and apt is available
-  if command -v apt-get &> /dev/null && [[ "$EUID" -ne 0 ]] && sudo -n true 2>/dev/null; then
-    echo "Installing via apt..."
-    sudo apt-get update || true
-    sudo apt-get install -y curl wget git build-essential || true
+  if ! command -v apt-get &> /dev/null; then
+    echo "⚠️  apt-get not available, skipping apt installs"
+    return
   fi
 
-  # Install Homebrew for Linux (optional but recommended for tools)
+  sudo apt-get update -qq || true
+
+  # Core tools that are commonly available via apt
+  sudo apt-get install -y -qq \
+    curl wget git build-essential \
+    fzf ripgrep jq tree neovim tmux autojump \
+    2>/dev/null || echo "⚠️  Some apt packages failed to install"
+
+  # bat is called 'batcat' on Ubuntu/Debian
+  if ! command -v bat &> /dev/null; then
+    sudo apt-get install -y -qq bat 2>/dev/null || \
+    sudo apt-get install -y -qq batcat 2>/dev/null || true
+  fi
+
+  # exa/eza - try eza first (newer), then exa
+  if ! command -v exa &> /dev/null && ! command -v eza &> /dev/null; then
+    sudo apt-get install -y -qq eza 2>/dev/null || \
+    sudo apt-get install -y -qq exa 2>/dev/null || true
+  fi
+
+  # thefuck
+  if ! command -v thefuck &> /dev/null; then
+    sudo apt-get install -y -qq thefuck 2>/dev/null || \
+    pip3 install --user thefuck 2>/dev/null || true
+  fi
+}
+
+install_linux_tools_brew() {
+  echo "📦 Attempting Homebrew install for remaining tools..."
+
+  # Install Homebrew for Linux if not present
   if ! command -v brew &> /dev/null; then
-    echo "📦 Installing Homebrew for Linux (for modern CLI tools)..."
-    echo "   You can skip this (Ctrl+C) if you don't want Homebrew"
-    sleep 3
-    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || echo "⚠️  Homebrew install skipped/failed"
+    echo "📦 Installing Homebrew for Linux..."
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+      echo "⚠️  Homebrew install failed, continuing without it"
+      return
+    }
 
     if [[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
       eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
     fi
   fi
 
-  # Install useful CLI tools if brew is available
   if command -v brew &> /dev/null; then
     echo "📦 Installing CLI tools via Homebrew..."
-    brew install exa bat fzf ripgrep jq tree neovim tmux thefuck autojump 2>/dev/null || echo "⚠️  Some tools failed to install via brew"
+    # Only install what apt couldn't provide
+    for tool in exa bat thefuck; do
+      if ! command -v "$tool" &> /dev/null; then
+        brew install "$tool" 2>/dev/null || echo "⚠️  $tool failed to install via brew"
+      fi
+    done
   fi
+}
+
+install_linux_tools() {
+  echo "📦 Installing Linux tools..."
+
+  # Prefer apt for speed and reliability in containers
+  install_linux_tools_apt
+
+  # Only try Homebrew if we're missing key tools and not in a minimal container
+  if [[ -z "$CODESPACES" ]] && [[ -z "$REMOTE_CONTAINERS" ]]; then
+    # Check if we're missing tools that apt couldn't provide
+    local missing_tools=0
+    for tool in exa bat thefuck; do
+      if ! command -v "$tool" &> /dev/null && ! command -v "${tool}cat" &> /dev/null; then
+        ((missing_tools++))
+      fi
+    done
+
+    if [[ $missing_tools -gt 0 ]]; then
+      read -t 10 -p "Install Homebrew for additional tools? [y/N] " -n 1 -r || REPLY="n"
+      echo
+      if [[ $REPLY =~ ^[Yy]$ ]]; then
+        install_linux_tools_brew
+      fi
+    fi
+  fi
+}
+
+install_macos_tools() {
+  echo "📦 Installing macOS tools..."
+
+  if ! command -v brew &> /dev/null; then
+    echo "📦 Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  fi
+
+  echo "📦 Installing CLI tools via Homebrew..."
+  brew install exa bat fzf ripgrep jq tree neovim tmux thefuck autojump kubecolor 2>/dev/null || \
+    echo "⚠️  Some tools failed to install via brew"
 }
 
 install_krew() {
@@ -171,7 +243,7 @@ set_zsh_default() {
 
 main() {
   echo ""
-  echo "🎯 Focus: Oh My Zsh + Powerlevel10k + plugins for Linux environments"
+  echo "🎯 Focus: Oh My Zsh + Powerlevel10k + plugins"
   echo ""
 
   # Core installations (always run)
@@ -179,9 +251,11 @@ main() {
   install_powerlevel10k
   install_zsh_plugins
 
-  # Linux-specific tools
+  # Platform-specific tools
   if [[ "$OS" == "linux" ]]; then
     install_linux_tools
+  elif [[ "$OS" == "macos" ]]; then
+    install_macos_tools
   fi
 
   # Kubernetes tools (nice-to-have, may fail gracefully)
