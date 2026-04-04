@@ -23,6 +23,35 @@ mkdir -p "$CLAUDE_DIR/skills"
 mkdir -p "$CLAUDE_DIR/agents"
 mkdir -p "$CLAUDE_DIR/hooks"
 
+# --- Brain repo (private, holds journal + memory) ---
+BRAIN_REPO="git@github.com:alex-bezek/claude-brain.git"
+BRAIN_LOCAL="$HOME/code/claude-brain"
+BRAIN_LINK="$CLAUDE_DIR/brain"
+
+if [ ! -d "$BRAIN_LOCAL" ]; then
+  echo "  Cloning brain repo..."
+  git clone "$BRAIN_REPO" "$BRAIN_LOCAL" --quiet 2>/dev/null || {
+    echo "  ⚠  Could not clone brain repo — clone manually: git clone $BRAIN_REPO $BRAIN_LOCAL"
+  }
+fi
+
+if [ -d "$BRAIN_LOCAL" ]; then
+  # Ensure brain directory structure
+  mkdir -p "$BRAIN_LOCAL/journal/handoffs" "$BRAIN_LOCAL/memory"
+  # Create symlink
+  if [ -L "$BRAIN_LINK" ]; then
+    rm "$BRAIN_LINK"
+  elif [ -d "$BRAIN_LINK" ]; then
+    echo "  ⚠  $BRAIN_LINK is a real directory — move it aside before re-running"
+  fi
+  [ ! -e "$BRAIN_LINK" ] && ln -sf "$BRAIN_LOCAL" "$BRAIN_LINK"
+  echo "  Linked brain → $BRAIN_LOCAL"
+else
+  # No brain repo — create local directories as fallback
+  mkdir -p "$CLAUDE_DIR/brain/journal/handoffs" "$CLAUDE_DIR/brain/memory"
+  echo "  Using local brain (no sync — clone $BRAIN_REPO for cross-env sync)"
+fi
+
 # --- CLAUDE.md ---
 # Symlink global instructions
 if [ -L "$CLAUDE_DIR/CLAUDE.md" ]; then

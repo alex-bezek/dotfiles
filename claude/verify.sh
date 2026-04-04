@@ -57,11 +57,18 @@ fi
 check "Model is set to opus" "jq -e '.model | test(\"opus\")' '$CLAUDE_DIR/settings.json'"
 check "Status line configured" "jq -e '.statusLine.command' '$CLAUDE_DIR/settings.json'"
 check "Hooks configured" "jq -e '.hooks' '$CLAUDE_DIR/settings.json'"
+check "Stop hook configured" "jq -e '.hooks.Stop' '$CLAUDE_DIR/settings.json'"
+check "Setup hook configured" "jq -e '.hooks.Setup' '$CLAUDE_DIR/settings.json'"
 echo ""
 
 # --- Skills ---
 echo "Skills:"
 check "/review skill exists" "[ -f '$CLAUDE_DIR/skills/review/SKILL.md' ]"
+check "/focus skill exists" "[ -f '$CLAUDE_DIR/skills/focus/SKILL.md' ]"
+check "/threads skill exists" "[ -f '$CLAUDE_DIR/skills/threads/SKILL.md' ]"
+check "/handoff skill exists" "[ -f '$CLAUDE_DIR/skills/handoff/SKILL.md' ]"
+check "/verify skill exists" "[ -f '$CLAUDE_DIR/skills/verify/SKILL.md' ]"
+check "/sync-to-dotfiles skill exists" "[ -f '$CLAUDE_DIR/skills/sync-to-dotfiles/SKILL.md' ]"
 echo ""
 
 # --- Hooks ---
@@ -70,6 +77,26 @@ check "guard-destructive.sh exists" "[ -f '$CLAUDE_DIR/hooks/guard-destructive.s
 check "guard-destructive.sh is executable" "[ -x '$CLAUDE_DIR/hooks/guard-destructive.sh' ]"
 check "notify.sh exists" "[ -f '$CLAUDE_DIR/hooks/notify.sh' ]"
 check "notify.sh is executable" "[ -x '$CLAUDE_DIR/hooks/notify.sh' ]"
+check "session-journal.sh exists" "[ -f '$CLAUDE_DIR/hooks/session-journal.sh' ]"
+check "session-journal.sh is executable" "[ -x '$CLAUDE_DIR/hooks/session-journal.sh' ]"
+check "inject-context.sh exists" "[ -f '$CLAUDE_DIR/hooks/inject-context.sh' ]"
+check "inject-context.sh is executable" "[ -x '$CLAUDE_DIR/hooks/inject-context.sh' ]"
+check "brain-sync.sh exists" "[ -f '$CLAUDE_DIR/hooks/brain-sync.sh' ]"
+check "brain-sync.sh is executable" "[ -x '$CLAUDE_DIR/hooks/brain-sync.sh' ]"
+echo ""
+
+# --- Brain ---
+echo "Brain:"
+check "brain/ symlink exists" "[ -L '$CLAUDE_DIR/brain' ] || [ -d '$CLAUDE_DIR/brain' ]"
+check "brain/journal/ exists" "[ -d '$CLAUDE_DIR/brain/journal' ]"
+check "brain/journal/handoffs/ exists" "[ -d '$CLAUDE_DIR/brain/journal/handoffs' ]"
+check "brain/memory/ exists" "[ -d '$CLAUDE_DIR/brain/memory' ]"
+check_warn "brain is a git repo" "[ -d '$CLAUDE_DIR/brain/.git' ]"
+check_warn "threads.json exists" "[ -f '$CLAUDE_DIR/brain/journal/threads.json' ]"
+check_warn "meta.yaml exists" "[ -f '$CLAUDE_DIR/brain/journal/meta.yaml' ]"
+if [ -d "$CLAUDE_DIR/brain/.git" ]; then
+  check_warn "brain has remote" "cd '$CLAUDE_DIR/brain' && git remote get-url origin"
+fi
 echo ""
 
 # --- MCP Servers ---

@@ -42,6 +42,10 @@ Displays: `[Opus] branch-name (N changed) | [####----------------] 20% | $1.47`
 | `/verify` | `/verify` | Run setup verification checks (symlinks, settings, tools, MCP) |
 | `/sync-to-dotfiles` | `/sync-to-dotfiles`, `/sync-to-dotfiles --pr` | Show diff of local vs dotfiles repo, sync changes back. With `--pr`, creates a PR. |
 | `/sync-from-dotfiles` | `/sync-from-dotfiles` | Pull latest dotfiles and refresh local config. Warns about local changes first. |
+| `/focus` | `/focus CD pipeline`, `/focus terraform VPC` | Load context for a workstream by natural language description. Searches threads, journal, memory, git branches. |
+| `/threads` | `/threads` | List all tracked work threads with status and last activity. |
+| `/handoff` | `/handoff` | Write a rich end-of-session summary. Updates work thread state. |
+| `/resume` | `/resume <topic>` | Alias for `/focus`. |
 
 ### Hooks
 
@@ -49,6 +53,8 @@ Displays: `[Opus] branch-name (N changed) | [####----------------] 20% | $1.47`
 |-------|--------|-------------|
 | `Notification` | `notify.sh` | Sends OS-native notification when Claude needs attention (macOS `osascript`, Linux `notify-send`, fallback `\a` bell) |
 | `PreToolUse` | `guard-destructive.sh` | Blocks `git push --force`, `git reset --hard`, `git clean -f`, and dangerous `rm -rf` targets. Suggests safer alternatives. |
+| `Stop` | `session-journal.sh` | Writes session journal entry (task, tools, corrections), updates work threads, increments review counter. |
+| `Setup` | `inject-context.sh` | Shows recent work threads at session start. Nudges `/self-review` when due. |
 
 ### MCP Servers
 
@@ -170,10 +176,16 @@ claude/
 │   ├── review/SKILL.md            # /review — code review
 │   ├── verify/SKILL.md            # /verify — setup health check
 │   ├── sync-to-dotfiles/SKILL.md  # /sync-to-dotfiles — local → repo
-│   └── sync-from-dotfiles/SKILL.md # /sync-from-dotfiles — repo → local
+│   ├── sync-from-dotfiles/SKILL.md # /sync-from-dotfiles — repo → local
+│   ├── focus/SKILL.md             # /focus — load workstream context
+│   ├── threads/SKILL.md           # /threads — list work threads
+│   ├── resume/SKILL.md            # /resume — alias for /focus
+│   └── handoff/SKILL.md           # /handoff — end-of-session summary
 ├── hooks/
 │   ├── guard-destructive.sh       # Blocks force push, reset --hard, dangerous rm
-│   └── notify.sh                  # Platform-aware notifications
+│   ├── notify.sh                  # Platform-aware notifications
+│   ├── session-journal.sh         # Stop: session journal + thread tracking
+│   └── inject-context.sh          # Setup: recent threads orientation
 ├── verify.sh                      # Validate setup is correct
 ├── agents/                        # Custom sub-agents (future)
 ├── README.md                      # This file

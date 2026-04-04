@@ -1,5 +1,7 @@
 # Global Preferences
 
+> Setup docs: `~/code/dotfiles/claude/README.md` | Custom skills: `/focus`, `/review`, `/verify`, `/threads`, `/handoff`, `/sync-to-dotfiles`
+
 ## Communication
 - Be concise. Sacrifice grammar for brevity in plans.
 - Surface unresolved questions early — don't bury them at the end.

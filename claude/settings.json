@@ -50,6 +50,28 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/session-journal.sh"
+          }
+        ]
+      }
+    ],
+    "Setup": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/inject-context.sh"
+          }
+        ]
+      }
     ]
   }
 }
