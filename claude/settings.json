@@ -1,0 +1,55 @@
+{
+  "permissions": {
+    "defaultMode": "auto"
+  },
+  "model": "opus[1m]",
+  "enabledPlugins": {
+    "gopls-lsp@claude-plugins-official": true
+  },
+  "spinnerVerbs": {
+    "mode": "replace",
+    "verbs": [
+      "shrimping",
+      "keeping it shimple",
+      "consulting my lil french boi",
+      "no mistakes",
+      "loading up celery man",
+      "mudding the walls",
+      "doing trim coping cuts",
+      "clearing the snow",
+      "being a shrimple man",
+      "fixing the slop"
+    ]
+  },
+  "skipAutoPermissionPrompt": true,
+  "voiceEnabled": true,
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "padding": 2
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/notify.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/guard-destructive.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

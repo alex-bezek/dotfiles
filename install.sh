@@ -68,7 +68,7 @@ install_linux_tools_apt() {
 
   # Core tools that are commonly available via apt
   sudo apt-get install -y -qq \
-    curl wget git build-essential \
+    curl wget git gh build-essential \
     fzf ripgrep jq tree neovim tmux autojump \
     2>/dev/null || echo "⚠️  Some apt packages failed to install"
 
@@ -88,6 +88,13 @@ install_linux_tools_apt() {
   if ! command -v thefuck &> /dev/null; then
     sudo apt-get install -y -qq thefuck 2>/dev/null || \
     pip3 install --user thefuck 2>/dev/null || true
+  fi
+
+  # Node.js LTS (includes npm/npx) - needed for Amp and MCP servers
+  if ! command -v npx &> /dev/null; then
+    echo "📦 Installing Node.js LTS..."
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+    sudo apt-get install -y -qq nodejs
   fi
 }
 
@@ -153,7 +160,7 @@ install_macos_tools() {
   fi
 
   echo "📦 Installing CLI tools via Homebrew..."
-  brew install exa bat fzf ripgrep jq tree neovim tmux thefuck autojump kubecolor 2>/dev/null || \
+  brew install exa bat fzf ripgrep jq tree neovim tmux thefuck autojump kubecolor node 2>/dev/null || \
     echo "⚠️  Some tools failed to install via brew"
 }
 
@@ -280,6 +287,13 @@ main() {
   # Setup dotfiles
   setup_symlinks
   set_zsh_default
+
+  # Claude Code configuration
+  if [[ -f "$DOTFILES_DIR/claude/install-claude.sh" ]]; then
+    echo ""
+    echo "🤖 Setting up Claude Code..."
+    bash "$DOTFILES_DIR/claude/install-claude.sh"
+  fi
 
   echo ""
   echo "✨ Dotfiles setup complete!"
