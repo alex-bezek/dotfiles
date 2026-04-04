@@ -37,7 +37,7 @@ fi
 
 if [ -d "$BRAIN_LOCAL" ]; then
   # Ensure brain directory structure
-  mkdir -p "$BRAIN_LOCAL/journal/handoffs" "$BRAIN_LOCAL/memory"
+  mkdir -p "$BRAIN_LOCAL/projects"
   # Create symlink
   if [ -L "$BRAIN_LINK" ]; then
     rm "$BRAIN_LINK"
@@ -48,7 +48,7 @@ if [ -d "$BRAIN_LOCAL" ]; then
   echo "  Linked brain → $BRAIN_LOCAL"
 else
   # No brain repo — create local directories as fallback
-  mkdir -p "$CLAUDE_DIR/brain/journal/handoffs" "$CLAUDE_DIR/brain/memory"
+  mkdir -p "$CLAUDE_DIR/brain/projects"
   echo "  Using local brain (no sync — clone $BRAIN_REPO for cross-env sync)"
 fi
 

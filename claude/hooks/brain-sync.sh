@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Sync brain repo (private git repo holding journal, threads, memory).
-# Called by other hooks — not a hook itself.
+# Sync brain repo (private git repo holding project notes).
+# Called by hooks and skills — not a hook itself.
 #
 # Usage: brain-sync.sh pull|push
 #
-# Pull: runs at session start (Setup hook calls this)
-# Push: runs at session end (Stop hook calls this)
+# Pull: runs at session start (Setup hook)
+# Push: runs after /note saves changes
 
 BRAIN_DIR="$HOME/.claude/brain"
 

@@ -11,7 +11,7 @@ Run the verification script and interpret the results.
 
 ## Steps
 
-1. Run `bash ~/.claude/verify.sh` (or find it via the dotfiles repo at `~/code/dotfiles/claude/verify.sh`)
+1. Resolve the dotfiles path from the settings symlink: `DOTFILES_CLAUDE="$(dirname "$(readlink -f ~/.claude/settings.json)")"` then run `bash "$DOTFILES_CLAUDE/verify.sh"`
 2. Report the results clearly
 3. If there are failures, explain what's wrong and how to fix each one
 4. If everything passes, confirm the setup is healthy

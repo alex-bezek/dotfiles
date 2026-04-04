@@ -2,32 +2,6 @@
   "permissions": {
     "defaultMode": "auto"
   },
-  "model": "opus[1m]",
-  "enabledPlugins": {
-    "gopls-lsp@claude-plugins-official": true
-  },
-  "spinnerVerbs": {
-    "mode": "replace",
-    "verbs": [
-      "shrimping",
-      "keeping it shimple",
-      "consulting my lil french boi",
-      "no mistakes",
-      "loading up celery man",
-      "mudding the walls",
-      "doing trim coping cuts",
-      "clearing the snow",
-      "being a shrimple man",
-      "fixing the slop"
-    ]
-  },
-  "skipAutoPermissionPrompt": true,
-  "voiceEnabled": true,
-  "statusLine": {
-    "type": "command",
-    "command": "~/.claude/statusline.sh",
-    "padding": 2
-  },
   "hooks": {
     "Notification": [
       {
@@ -51,17 +25,6 @@
         ]
       }
     ],
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/session-journal.sh"
-          }
-        ]
-      }
-    ],
     "Setup": [
       {
         "matcher": "",
@@ -73,5 +36,30 @@
         ]
       }
     ]
-  }
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "padding": 2
+  },
+  "enabledPlugins": {
+    "gopls-lsp@claude-plugins-official": true
+  },
+  "spinnerVerbs": {
+    "mode": "replace",
+    "verbs": [
+      "shrimping",
+      "keeping it shimple",
+      "consulting my lil french boi",
+      "no mistakes",
+      "loading up celery man",
+      "mudding the walls",
+      "doing trim coping cuts",
+      "clearing the snow",
+      "being a shrimple man",
+      "fixing the slop"
+    ]
+  },
+  "voiceEnabled": true,
+  "skipAutoPermissionPrompt": true
 }

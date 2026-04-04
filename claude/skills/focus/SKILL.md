@@ -1,43 +1,30 @@
 ---
 name: focus
-description: Load context for a topic or workstream. Describe what you want to work on in natural language — Claude finds relevant sessions, threads, memories, and tickets.
+description: Load context for a topic or workstream. Searches project notes in the brain and git history.
 argument-hint: "<what you want to work on>"
 user-invocable: true
-allowed-tools: "Read Glob Grep Bash(cat:*) Bash(jq:*) Bash(ls:*) Bash(git log:*) Bash(git branch:*)"
+allowed-tools: "Read Glob Grep Bash(cat:*) Bash(yq:*) Bash(ls:*) Bash(git log:*) Bash(git branch:*)"
 ---
 
 # Focus on a Workstream
 
-The user wants to load context for a specific area of work. They've described it in natural language via `$ARGUMENTS`. Your job is to find everything relevant across all available data sources and present a focused briefing.
+The user wants to load context for a specific area of work. They've described it in natural language via `$ARGUMENTS`. Find everything relevant and present a focused briefing.
 
-## Data Sources to Search
+## Data Sources
 
-Scan these in order. Each is a compact index — read the index, then selectively read detail files only for matches.
+### 1. Project Index (`~/.claude/brain/projects.yaml`)
+Scan the index for matching projects. Match `$ARGUMENTS` against:
+- Project ID and name
+- Repo path and branch name
+Use fuzzy/semantic matching — "API work" should match a project named "My Side Project API".
 
-### 1. Work Threads (`~/.claude/brain/journal/threads.json`)
-Scan all thread entries. Match against `$ARGUMENTS` by comparing with:
-- Thread ID, project name, branch name
-- Thread summary and last_task fields
-Use fuzzy/semantic matching — "CD pipeline" should match a thread about "ArgoCD deployment rollouts" or a branch named "alex/deploy-pipeline".
+### 2. Project Notes (`~/.claude/brain/projects/<id>/`)
+For matching projects, read their notes files. These contain status, decisions, next steps, architecture notes, etc.
 
-### 2. Session Journal (`~/.claude/brain/journal/*.yaml`)
-Scan recent daily journal files (last 7-14 days). Match session entries by:
-- Task descriptions
-- Branch names
-- Project names
-For matching sessions, note the dates, what tools were used, and whether there were open items.
-
-### 3. Memory (`~/.claude/brain/memory/*/MEMORY.md`)
-Scan memory index files across projects. Match entries by description.
-Only read the actual memory files for strong matches.
-
-### 4. Git History
-In the current repo, check:
+### 3. Git History (current repo)
+Check the current repo for relevant context:
 - `git branch -a` for branches matching the topic
-- `git log --oneline` on matching branches for recent activity
-
-### 5. Linear (if available and relevant)
-If the topic sounds like it could map to Linear tickets, mention that the user can ask you to search Linear for related issues.
+- `git log --oneline -20` on matching branches for recent activity
 
 ## Output
 
@@ -46,33 +33,30 @@ Present a focused briefing:
 ```
 ## Focus: <topic>
 
-### Recent Activity
-- <date>: <what happened> (branch: <branch>)
-- <date>: <what happened>
+### Project Notes
+<summarize what's in the brain for this project>
 
 ### Current State
-<synthesized summary of where things stand>
+<synthesized summary — branch state, what's done, what's open>
 
-### Related Context
-- Memory: <relevant memory entries>
-- Branches: <matching branches>
-- Threads: <matching work threads>
+### Git Activity
+<recent commits on relevant branches>
 
-### Open Items
-- <anything unfinished from matching sessions>
+### Next Steps
+<from the notes, what should be done next>
 ```
 
-Keep it concise — this is a briefing, not a dump. Prioritize recent activity and current state over history.
+Keep it concise — this is a briefing, not a dump. Prioritize actionable context.
 
 ## If nothing matches
 
-If no data sources match `$ARGUMENTS`, say so and suggest:
-- Being more specific about the work
-- Checking `/threads` for available work threads
-- Starting fresh (the journal will track this session automatically)
+If no project notes or branches match `$ARGUMENTS`, say so and suggest:
+- `/projects` to see tracked projects
+- `/note <name>` to start tracking the current work
+- Being more specific about what they're looking for
 
 ## Key Principle
 
-You ARE the semantic search engine. The indexes are small enough to scan.
+You ARE the search engine. The index and notes are small enough to scan entirely.
 Match by meaning, not keywords. "CD work" matches "continuous deployment",
-"deploy pipeline", "ArgoCD", "rollout strategy", etc.
+"deploy pipeline", "ArgoCD", etc.

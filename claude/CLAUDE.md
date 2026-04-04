@@ -1,6 +1,10 @@
 # Global Preferences
 
-> Setup docs: `~/code/dotfiles/claude/README.md` | Custom skills: `/focus`, `/review`, `/verify`, `/threads`, `/handoff`, `/sync-to-dotfiles`
+> Setup docs: `~/code/dotfiles/claude/README.md` | Custom skills: `/focus`, `/note`, `/projects`, `/review`, `/verify`, `/sync-to-dotfiles`
+
+## Project Memory
+- Project notes are in `~/.claude/brain/projects/`. Use `/focus` to load context for previous work.
+- Use `/note` to save project state, decisions, and next steps to the brain.
 
 ## Communication
 - Be concise. Sacrifice grammar for brevity in plans.
