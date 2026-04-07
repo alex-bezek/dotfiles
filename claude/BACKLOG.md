@@ -42,6 +42,7 @@ Useful but not blocking anything right now.
 ### Hooks & Automation
 - [ ] **PostToolUse: secrets scanner** — Regex grep on written files for API keys, tokens, credentials
 - [ ] **Git commit hooks via agent harness** — Use git to save changes with descriptive notes, commit hooks to validate
+- [ ] **TaskCompleted: test runner template** — Generic quality gate that detects project language (go.mod → `go test`, package.json → `npm test`, etc.) and runs tests when a task completes. Ship as a template in dotfiles that repos can copy and customize. Inspired by ngrok-operator's per-package verify-fix.sh hook.
 - [ ] **Hook to read agent.md files** — [Reference](https://github.com/anthropics/claude-code/issues/6235#issuecomment-3218728961)
 
 ### Configuration
