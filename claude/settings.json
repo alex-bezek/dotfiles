@@ -36,6 +36,17 @@
           }
         ]
       }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/brain-sync.sh push"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {

@@ -8,7 +8,7 @@ Things that would immediately improve daily workflow.
 
 ### Hooks
 - [ ] **PostToolUse: auto-format on edit** — Run `gofmt`/`goimports` after file edits so unformatted Go never gets committed
-- [ ] **StopSession: brain sync push** — Push brain repo on session end (currently only pulls on start)
+- [x] **SessionEnd: brain sync push** — Push brain repo on session end (currently only pulls on start)
 - [ ] **Guard: git checkout/restore** — `guard-destructive.sh` misses `git checkout .` and `git restore .` which discard all unstaged changes
 
 ### MCP Servers
