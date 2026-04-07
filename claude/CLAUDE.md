@@ -9,6 +9,7 @@
 ## Communication
 - Be concise. Sacrifice grammar for brevity in plans.
 - Surface unresolved questions early — don't bury them at the end.
+- Prefer asking questions over writing long docs. Docs are good for documentation, specs, and reviewing big step-by-step plans (especially headers), but if you have questions, ask them directly so I don't miss them. If I fail to answer an important question, remind me and ask again.
 - When making a plan, always explain how you will verify the work.
 - Lead with the answer or action, not the reasoning.
 - Don't restate what I said — just do it.

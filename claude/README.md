@@ -65,47 +65,7 @@ Displays: `[Opus] branch-name (N changed) | [####----------------] 20% | $1.47`
 
 **`gh` CLI**: Used for GitHub operations (PRs, issues, checks) via Bash tool. Installed by the main `install.sh` on macOS (`brew`) and Linux (`apt`). The Claude installer warns if it's missing but doesn't install it.
 
-#### Future MCP Servers to Consider
-
-| Server | Why | Priority |
-|--------|-----|----------|
-| Sentry | Error tracking — investigate production errors in context | Medium |
-| Datadog | Observability — check dashboards/monitors when debugging perf | Medium |
-| AWS | Cloud resource management for EC2 dev workflows | Medium |
-| Buildkite | CI/CD — check build status, trigger pipelines | Medium |
-| Notion | Team docs — reference runbooks and design docs | Low |
-| GitHub (MCP) | Direct tool access vs `gh` CLI — evaluate if it adds value over Bash | Low |
-| Context7 | Up-to-date library docs in context | Low |
-| ngrok API/Docs | Internal tooling — wait for official MCP support (mintlify?) | TBD |
-| Figma | Design specs — useful if doing frontend work | Low |
-| PostHog | Analytics — product usage data | Low |
-
-### Future Enhancements
-
-**Skills & Agents**
-- Sub-agents: test writer, docs writer, build validator, code architect, on-call guide
-- Agent teams for large multi-file tasks
-- Skill creator skill (`npx anthropic/skills` skill packs)
-
-**Plugins to Evaluate**
-- `commit-commands` — git commit workflows including push and PR creation
-- `pr-review-toolkit` — specialized agents for PR review
-- `context-mode` (`mksglu/context-mode`) — context management
-
-**Hooks & Automation**
-- Git commit hooks integration for agent harness engineering (save + describe + validate)
-- PostToolUse hook for repo-specific formatters (per-project, not global)
-
-**Environment & Platform**
-- Voice input across Mac / VM / Codespaces (currently Mac-only)
-- Install Claude Code in dev containers and Codespaces definitions
-- Screenshots over SSH (known limitation)
-- Claude Code online (`claude.ai/code`) for repo interaction
-
-**Other**
-- Claude Desktop "Cowork" feature — investigate use case
-- Customize spinner verbs further
-- Propose pushing config into shared team repos once patterns stabilize
+See [BACKLOG.md](BACKLOG.md) for planned improvements, ideas to explore, and completed items.
 
 ### Environments
 
@@ -186,7 +146,8 @@ claude/
 ├── verify.sh                      # Validate setup is correct
 ├── agents/                        # Custom sub-agents (future)
 ├── README.md                      # This file
-└── TIPS.md                        # Workflow tips and feature reference
+├── TIPS.md                        # Workflow tips and feature reference
+└── BACKLOG.md                     # Prioritized todo list and completed items
 ```
 
 ## Adding New Config
