@@ -14,6 +14,66 @@ Check `$ARGUMENTS` to determine which mode to run:
 - **No arguments** (`/improve`) — Full audit: research + present findings + implement approved items
 - **`quick`** (`/improve quick`) — Pick one easy win from BACKLOG.md, implement it, explain how it works and how to use it
 - **`research`** (`/improve research`) — Research only: find new things, update BACKLOG.md, no implementation
+- **`loop`** (`/improve loop`) — Autonomous cycle: implement easy wins, prune backlog, research when empty. Commits to `improve/auto` branch without pushing.
+
+---
+
+## Mode: Loop
+
+Autonomous maintenance cycle — intended to be run on a schedule (e.g., daily via `/schedule` or `/loop 24h /improve loop`). Works on a feature branch so changes can be reviewed before merging.
+
+### Setup
+
+1. From `~/code/dotfiles`, create or switch to the `improve/auto` branch:
+   ```
+   git checkout -b improve/auto master || git checkout improve/auto && git merge master
+   ```
+2. All commits happen on this branch. Never push automatically.
+
+### Cycle
+
+Repeat until the session budget is spent or 5 cycles complete (whichever comes first):
+
+**Step 1: Quick implement**
+- Read BACKLOG.md
+- Find the highest-value trivial/small item
+- If none exist, skip to Step 3
+- Implement it
+- Commit with a descriptive message (e.g., "improve: add PostToolUse gofmt hook")
+- Move item to Done in BACKLOG.md, commit that too
+
+**Step 2: Prune**
+- Review BACKLOG.md for:
+  - Items that are now stale (feature already exists, tool deprecated, etc.)
+  - Items that duplicate each other
+  - Items that sounded good but aren't worth the effort given current setup
+  - Items in Explore/Research that have been there for 2+ months with no action (consider removing or downgrading)
+- Remove or merge items as needed
+- Commit: "improve: prune backlog — removed N stale items"
+- **Cap**: BACKLOG.md should stay under ~60 unchecked items. If it's over, be more aggressive pruning low-priority items.
+
+**Step 3: Research (only when Step 1 found no easy items)**
+- Run the Research mode (3 parallel agents)
+- Add findings to BACKLOG.md
+- Immediately prune the new additions (Step 2 again) — this prevents unbounded growth
+- Commit: "improve: research — added N new items to backlog"
+
+**Step 4: Back to Step 1**
+
+### After the loop ends
+
+Print a summary:
+```
+Completed N improvements on branch `improve/auto`:
+- [commit hash] add PostToolUse gofmt hook
+- [commit hash] prune backlog — removed 3 stale items
+- ...
+
+Review with: git log master..improve/auto
+Merge with: git checkout master && git merge improve/auto
+```
+
+Do NOT push. Do NOT merge to master. The user reviews and merges when ready.
 
 ---
 

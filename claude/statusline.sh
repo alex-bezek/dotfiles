@@ -21,6 +21,11 @@ if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   if [ "$UNSTAGED" -gt 0 ] 2>/dev/null; then
     CHANGES="${UNSTAGED} changed"
   fi
+  # Unpushed commits (ahead of remote tracking branch)
+  AHEAD=$(git rev-list --count @{upstream}..HEAD 2>/dev/null || echo 0)
+  if [ "$AHEAD" -gt 0 ] 2>/dev/null; then
+    UNPUSHED="${AHEAD}↑"
+  fi
 fi
 
 # Context bar (clean ascii style)
@@ -35,8 +40,13 @@ BAR="${BAR}]"
 OUT="[${MODEL}]"
 if [ -n "$BRANCH" ]; then
   OUT="${OUT} ${BRANCH}"
-  if [ -n "$CHANGES" ]; then
-    OUT="${OUT} (${CHANGES})"
+  INFO=""
+  if [ -n "$CHANGES" ]; then INFO="${CHANGES}"; fi
+  if [ -n "$UNPUSHED" ]; then
+    if [ -n "$INFO" ]; then INFO="${INFO}, ${UNPUSHED}"; else INFO="${UNPUSHED}"; fi
+  fi
+  if [ -n "$INFO" ]; then
+    OUT="${OUT} (${INFO})"
   fi
   OUT="${OUT} |"
 fi
