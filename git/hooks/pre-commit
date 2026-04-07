@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+# Global pre-commit hook: block commits containing secrets or sensitive data
+# Applied to all repos via core.hooksPath
+
+set -euo pipefail
+
+# Patterns that indicate secrets
+SECRET_PATTERNS=(
+  # API keys and tokens
+  'AKIA[0-9A-Z]{16}'                          # AWS Access Key ID
+  'sk-[a-zA-Z0-9]{20,}'                       # OpenAI / Anthropic API keys
+  'ghp_[a-zA-Z0-9]{36}'                       # GitHub personal access token
+  'gho_[a-zA-Z0-9]{36}'                       # GitHub OAuth token
+  'github_pat_[a-zA-Z0-9_]{22,}'              # GitHub fine-grained PAT
+  'xoxb-[0-9a-zA-Z-]+'                        # Slack bot token
+  'xoxp-[0-9a-zA-Z-]+'                        # Slack user token
+  'xapp-[0-9a-zA-Z-]+'                        # Slack app token
+
+  # Private keys
+  '-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----'
+  '-----BEGIN PGP PRIVATE KEY BLOCK-----'
+
+  # Generic secret patterns
+  'password\s*[:=]\s*["\x27][^"\x27]{8,}'     # password = "..."
+  'secret\s*[:=]\s*["\x27][^"\x27]{8,}'       # secret = "..."
+  'token\s*[:=]\s*["\x27][^"\x27]{8,}'        # token = "..."
+  'api_key\s*[:=]\s*["\x27][^"\x27]{8,}'      # api_key = "..."
+)
+
+# Files to always skip (binary, locks, etc.)
+SKIP_FILES='\.png$|\.jpg$|\.gif$|\.ico$|\.woff|\.ttf$|\.lock$|\.sum$'
+
+FOUND=0
+
+# Get staged files (only added/modified content)
+FILES=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || true)
+
+if [ -z "$FILES" ]; then
+  exit 0
+fi
+
+for file in $FILES; do
+  # Skip binary-like files
+  if echo "$file" | grep -qE "$SKIP_FILES"; then
+    continue
+  fi
+
+  # Skip if file doesn't exist (deleted)
+  if [ ! -f "$file" ]; then
+    continue
+  fi
+
+  # Get only the staged content (added lines)
+  STAGED=$(git diff --cached -- "$file" | grep '^+[^+]' || true)
+
+  if [ -z "$STAGED" ]; then
+    continue
+  fi
+
+  for pattern in "${SECRET_PATTERNS[@]}"; do
+    MATCH=$(echo "$STAGED" | grep -E "$pattern" 2>/dev/null || true)
+    if [ -n "$MATCH" ]; then
+      if [ "$FOUND" -eq 0 ]; then
+        echo "Possible secrets detected in staged changes:"
+        echo ""
+      fi
+      FOUND=1
+      echo "  $file:"
+      echo "$MATCH" | head -3 | sed 's/^/    /'
+      echo ""
+      break
+    fi
+  done
+done
+
+# Also check for .env files being committed
+ENV_FILES=$(echo "$FILES" | grep -E '(^|/)\.env(\.|$)' || true)
+if [ -n "$ENV_FILES" ]; then
+  if [ "$FOUND" -eq 0 ]; then
+    echo "Possible secrets detected in staged changes:"
+    echo ""
+  fi
+  FOUND=1
+  echo "  .env file(s) staged for commit:"
+  echo "$ENV_FILES" | sed 's/^/    /'
+  echo ""
+fi
+
+if [ "$FOUND" -ne 0 ]; then
+  echo "To commit anyway, use: git commit --no-verify"
+  exit 1
+fi
+
+# If the repo has its own hooks, run them too
+REPO_HOOK="$(git rev-parse --git-dir)/hooks-local/pre-commit"
+if [ -x "$REPO_HOOK" ]; then
+  exec "$REPO_HOOK" "$@"
+fi

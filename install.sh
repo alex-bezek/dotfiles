@@ -221,6 +221,16 @@ install_kubecolor() {
   fi
 }
 
+setup_git_hooks() {
+  echo "Setting up global git hooks..."
+  HOOKS_DIR="$DOTFILES_DIR/git/hooks"
+
+  if [[ -d "$HOOKS_DIR" ]]; then
+    git config --global core.hooksPath "$HOOKS_DIR"
+    echo "  core.hooksPath -> $HOOKS_DIR"
+  fi
+}
+
 setup_symlinks() {
   echo "🔗 Creating symlinks..."
 
@@ -283,6 +293,9 @@ main() {
   else
     echo "⚠️  kubectl not found, skipping krew/kubecolor (install kubectl first if needed)"
   fi
+
+  # Global git hooks (secrets scanner, etc.)
+  setup_git_hooks
 
   # Setup dotfiles
   setup_symlinks
