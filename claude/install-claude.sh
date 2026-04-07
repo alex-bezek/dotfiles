@@ -138,6 +138,14 @@ if command -v jq &> /dev/null; then
     else
       echo "  Linear MCP server already configured"
     fi
+    # Playwright MCP server
+    if ! jq -e '.mcpServers["playwright"]' "$CLAUDE_JSON" &>/dev/null; then
+      tmp=$(mktemp) && trap "rm -f '$tmp'" EXIT
+      jq '.mcpServers["playwright"] = {"type": "stdio", "command": "npx", "args": ["@playwright/mcp@latest"]}' "$CLAUDE_JSON" > "$tmp" && mv "$tmp" "$CLAUDE_JSON"
+      echo "  Added Playwright MCP server"
+    else
+      echo "  Playwright MCP server already configured"
+    fi
   else
     echo "  Skipping MCP setup — ~/.claude.json not found (run Claude Code once first)"
   fi

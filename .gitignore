@@ -1,5 +1,6 @@
 # Local configuration overrides
 .zshrc.local
+.claude/settings.local.json
 
 # OS files
 .DS_Store

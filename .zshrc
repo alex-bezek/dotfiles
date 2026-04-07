@@ -24,11 +24,15 @@ fi
 
 export TERM="xterm-256color"
 
-# Company-specific (customize as needed)
+# Company-specific
 export NGROK_EMAIL="${NGROK_EMAIL:-alex@ngrok.com}"
 export NGROK_LOGS_PAGER="${NGROK_LOGS_PAGER:-lnav}"
+export NGROK_DISABLE_ND_AUTO_RECOMPILATION=true
+export ND_AUTO_SSO_LOGIN=true
+export NGROK_DISABLE_ND_INTERACTIVE_HELP=true
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="$PATH:/usr/local/go/bin"
 
 # Linuxbrew
 if [[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
@@ -40,7 +44,7 @@ export KUBECONFIG=$HOME/.kube/config
 [ -f $HOME/fubectl.source ] && source $HOME/fubectl.source
 
 export AWS_PAGER=''
-export AWS_PROFILE="${AWS_PROFILE:-default}"
+export AWS_PROFILE="${AWS_PROFILE:-ngrok}"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -241,11 +245,6 @@ fi
 
 alias watch='watch '
 
-# neovim
-if command -v nvim &> /dev/null; then
-  alias vi='nvim'
-fi
-
 # thefuck (only if installed)
 if command -v thefuck &> /dev/null; then
   alias f='fuck'
@@ -254,6 +253,7 @@ fi
 
 alias b='nd go install nd'
 alias ndcf='nd config run | fx'
+alias c='claude --enable-auto-mode'
 
 # fzf history (only if fzf available)
 if command -v fzf &> /dev/null; then
@@ -265,5 +265,12 @@ fi
 # neofetch
 
 
-# source "/ngrok-host-shellhook"
-# source "/Users/alex/code/ngrok/.cache/ngrok-host-shellhook"
+# direnv
+if command -v direnv &> /dev/null; then
+  eval "$(direnv hook zsh)"
+fi
+
+# ngrok shell hook (devbox)
+if [[ -f "$HOME/ngrok/.cache/ngrok-host-shellhook" ]]; then
+  source "$HOME/ngrok/.cache/ngrok-host-shellhook"
+fi
