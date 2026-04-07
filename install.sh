@@ -249,8 +249,8 @@ set_zsh_default() {
   echo "🐚 Setting zsh as default shell..."
   ZSH_PATH="$(which zsh)"
 
-  # In Codespaces/containers, use sudo chsh which doesn't prompt for password
-  if [[ -n "$CODESPACES" ]] || [[ -n "$REMOTE_CONTAINERS" ]] || [[ -f /.dockerenv ]]; then
+  # In Codespaces/containers/non-interactive environments (e.g. cloud-init), use sudo chsh
+  if [[ -n "$CODESPACES" ]] || [[ -n "$REMOTE_CONTAINERS" ]] || [[ -f /.dockerenv ]] || [[ ! -t 0 ]]; then
     sudo chsh -s "$ZSH_PATH" "$(whoami)" || echo "⚠️  Could not set zsh as default"
   else
     # On regular systems, try without sudo first
