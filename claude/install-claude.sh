@@ -123,6 +123,19 @@ if command -v jq &> /dev/null && [ -f "$CLAUDE_JSON" ]; then
   echo "  Ensured MCP servers configured"
 fi
 
+# --- Plugins ---
+if command -v claude &> /dev/null && command -v jq &> /dev/null; then
+  echo "  Installing plugins..."
+  plugins=$(jq -r '.enabledPlugins // {} | keys[]' "$SCRIPT_DIR/settings.json" 2>/dev/null)
+  for plugin in $plugins; do
+    if claude plugin install "$plugin" 2>/dev/null; then
+      echo "  Installed plugin: $plugin"
+    else
+      echo "  ⚠  Plugin failed: $plugin (install manually: claude plugin install $plugin)"
+    fi
+  done
+fi
+
 # --- Tool warnings ---
 for tool in gh jq; do
   command -v "$tool" &> /dev/null || echo "  ⚠  $tool not found — install for full functionality"
