@@ -84,11 +84,6 @@ install_linux_tools_apt() {
     sudo apt-get install -y -qq exa 2>/dev/null || true
   fi
 
-  # thefuck
-  if ! command -v thefuck &> /dev/null; then
-    sudo apt-get install -y -qq thefuck 2>/dev/null || \
-    pip3 install --user thefuck 2>/dev/null || true
-  fi
 
   # Node.js LTS (includes npm/npx) - needed for Amp and MCP servers
   if ! command -v npx &> /dev/null; then
@@ -117,7 +112,7 @@ install_linux_tools_brew() {
   if command -v brew &> /dev/null; then
     echo "📦 Installing CLI tools via Homebrew..."
     # Only install what apt couldn't provide
-    for tool in exa bat thefuck; do
+    for tool in exa bat; do
       if ! command -v "$tool" &> /dev/null; then
         brew install "$tool" 2>/dev/null || echo "⚠️  $tool failed to install via brew"
       fi
@@ -135,7 +130,7 @@ install_linux_tools() {
   if [[ -z "$CODESPACES" ]] && [[ -z "$REMOTE_CONTAINERS" ]]; then
     # Check if we're missing tools that apt couldn't provide
     local missing_tools=0
-    for tool in exa bat thefuck; do
+    for tool in exa bat; do
       if ! command -v "$tool" &> /dev/null && ! command -v "${tool}cat" &> /dev/null; then
         ((missing_tools++))
       fi
@@ -160,7 +155,7 @@ install_macos_tools() {
   fi
 
   echo "📦 Installing CLI tools via Homebrew..."
-  brew install exa bat fzf ripgrep jq tree neovim tmux thefuck autojump kubecolor node 2>/dev/null || \
+  brew install exa bat fzf ripgrep jq tree neovim tmux autojump kubecolor node 2>/dev/null || \
     echo "⚠️  Some tools failed to install via brew"
 }
 

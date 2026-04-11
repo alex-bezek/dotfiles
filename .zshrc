@@ -245,11 +245,6 @@ fi
 
 alias watch='watch '
 
-# thefuck (only if installed)
-if command -v thefuck &> /dev/null; then
-  alias f='fuck'
-  eval $(thefuck --alias)
-fi
 
 alias b='nd go install nd'
 alias ndcf='nd config run | fx'

@@ -21,7 +21,7 @@ exec zsh
 
 ### Linux Tools (when on Linux)
 - **Homebrew** - Package manager for Linux (optional but recommended)
-- **Modern CLI tools** via Homebrew: exa, bat, fzf, ripgrep, neovim, tmux, thefuck, autojump
+- **Modern CLI tools** via Homebrew: exa, bat, fzf, ripgrep, neovim, tmux, autojump
 
 ### Kubernetes Tools (if kubectl present)
 - **krew** - kubectl plugin manager
@@ -111,7 +111,6 @@ kns         # kubectl ns (switch namespaces)
 ls          # exa with colors and icons (if installed)
 cat         # bat with syntax highlighting (if installed)
 vi          # nvim
-f           # thefuck - correct previous command
 h           # history search with fzf (if installed)
 ```
 

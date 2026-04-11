@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Notification hook: platform-aware alerts when Claude needs attention
 # Reads JSON from stdin for context (cwd, message, etc.)
+# Only sends desktop notifications — no terminal bells or escape sequences
 
 # Ensure homebrew binaries are in PATH
 export PATH="/opt/homebrew/bin:$PATH"
@@ -44,7 +45,7 @@ MSG=$(echo "$MSG" | head -c 200 | tr "'" " " | tr '"' " " | tr '`' " " | tr '$' 
 TITLE=$(echo "$TITLE" | head -c 100 | tr "'" " " | tr '"' " " | tr '`' " " | tr '$' " ")
 
 if [ "$(uname -s)" = "Darwin" ]; then
-  # Sticky notification via terminal-notifier (stays until dismissed)
+  # Desktop notification via terminal-notifier (stays until dismissed)
   if command -v terminal-notifier >/dev/null 2>&1; then
     terminal-notifier -title "$TITLE" -message "$MSG" \
       -sound Blow -group "claude-$$" \
@@ -53,12 +54,6 @@ if [ "$(uname -s)" = "Darwin" ]; then
     # Fallback to osascript (auto-dismisses)
     osascript -e "display notification \"$MSG\" with title \"$TITLE\" sound name \"Blow\"" 2>/dev/null
   fi
-
-  # iTerm2: flash dock icon once (not the persistent bounce)
-  printf '\e]1337;RequestAttention=once\a' 2>/dev/null
 elif command -v notify-send >/dev/null 2>&1; then
   notify-send --urgency=normal "$TITLE" "$MSG" 2>/dev/null
-  printf '\a'
-else
-  printf '\a'
 fi
