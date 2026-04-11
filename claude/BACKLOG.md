@@ -1,6 +1,10 @@
 # Claude Code Backlog
 
-Prioritized list of improvements, ideas, and things to explore. Items migrate to the README's "What's Configured" section once implemented.
+Prioritized list of Claude-specific improvements, ideas, and things to explore.
+
+This backlog is intentionally scoped to the Claude setup in [`claude/`](./). Broader dotfiles, terminal, editor, or non-Claude tool ideas should go in the repo-wide [`../BACKLOG.md`](../BACKLOG.md).
+
+Items migrate to the README's "What's Configured" section once implemented.
 
 ## High Priority
 
@@ -49,6 +53,8 @@ Useful but not blocking anything right now.
 - [ ] **claude/rules/ directory** — Organize rules into separate files instead of one big CLAUDE.md. See [docs](https://code.claude.com/docs/en/memory#organize-rules-with-claude%2Frules%2F).
 - [ ] **Per-project CLAUDE.md patterns** — Document recommended structure for adding Claude config to team repos
 - [ ] **Claude Code online** — Set up `claude.ai/code` for repo interaction when away from terminal
+- [ ] **Remove "Update available" from status line** — Filter out brew upgrade nag from Claude status output
+- [ ] **Copying large text out of Claude** — Document best practices for extracting large outputs (files, logs) from Claude sessions
 
 ## Low Priority
 
@@ -63,6 +69,10 @@ Nice to have, exploratory, or waiting on external factors.
 - [ ] **Content writer** — Blog posts, changelogs, release notes
 - [ ] **On-call guide** — Runbook-aware debugging assistant
 - [ ] **Agent teams** — Find a large multi-file task to test team delegation
+- [ ] **"West world" agent team** — Multi-agent team pattern with specialized personas for complex tasks
+
+### MCP Servers (Speculative)
+- [ ] **claude-peers-mcp** — Peer-to-peer MCP server for multi-agent collaboration
 
 ### Environment & Platform
 - [ ] **Voice input across environments** — Works on macOS. VM/Codespaces need investigation (possibly desktop app or web app).
@@ -85,6 +95,8 @@ Things to look into that aren't concrete tasks yet.
 - [ ] **draw.io CLI + Claude** — Auto-generate architecture diagrams from code
 - [ ] **AI newsletters/feeds** — Find good sources to stay current on tools and techniques
 - [ ] **Keybindings customization** — Not yet customized. Consider setting up shortcuts for common workflows.
+- [ ] **Local Ollama models with Claude** — Use local models as a fallback or for cheaper tasks
+- [ ] **OpenRouter** — Free hosted models as an alternative backend
 
 ## Done
 

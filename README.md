@@ -1,8 +1,78 @@
 # Dotfiles
 
-Shell environment dotfiles for Linux (GitHub Codespaces, devcontainers, EC2) and macOS. Optimized for Kubernetes infrastructure engineering.
+Portable development environment and workflow automation for macOS, Linux, Codespaces, devcontainers, and remote hosts.
 
-## Quick Start
+This repo is doing two jobs on purpose:
+
+1. Automating setup across the environments I actually work in
+2. Documenting the tools, workflows, and experiments I keep adding so I remember to use them
+
+It is not "finished." Some parts are stable and part of my normal loop; other parts are exploratory, backlog-driven, or still being shaped.
+
+## What This Repo Is
+
+The current stack is centered around:
+
+- Shell and CLI setup via `.zshrc` and `install.sh`
+- Terminal UX via Ghostty, tmux, and Starship
+- Git review via LazyGit
+- Editor/bootstrap via LazyVim
+- Kubernetes/infra ergonomics
+- Claude Code setup, skills, hooks, and workflow docs in [`claude/`](./claude)
+
+If you only skim one thing after this file, read [`claude/README.md`](./claude/README.md).
+
+## Environments
+
+This repo is meant to travel across a few different environments with different levels of setup:
+
+| Environment | Role |
+|------------|------|
+| macOS laptop/workstation | Primary daily environment |
+| GitHub Codespaces | Fast remote dev environment |
+| Devcontainers | Per-project reproducible setup |
+| Linux VMs / EC2 | Utility and infra work |
+
+The goal is not bit-for-bit sameness. The goal is a familiar working model everywhere:
+
+- `zsh` shell with the same aliases/functions
+- Similar terminal/editor ergonomics
+- Kubernetes and cloud tooling available when relevant
+- Claude Code configured the same way, with environment-specific overrides where needed
+
+## Current State
+
+### Stable / In Normal Use
+
+- `.zshrc` shell environment and aliases
+- Ghostty config
+- tmux config
+- Starship prompt
+- LazyGit config and cheatsheet
+- LazyVim bootstrap
+- Claude Code setup, hooks, skills, and session docs
+- Linux/macOS install automation
+
+### Active But Still Evolving
+
+- Cross-environment bootstrap quality
+- AI tooling and agent installation
+- Claude workflow automation
+- Brain/project-memory workflow
+- Verification and sync ergonomics
+
+### Explicitly Experimental
+
+- New MCP servers
+- Additional hooks and subagents
+- Shared/team patterns
+- Workflow ideas tracked in [`BACKLOG.md`](./BACKLOG.md) and [`claude/BACKLOG.md`](./claude/BACKLOG.md)
+
+## Normal Development Loops
+
+These are the main loops this repo appears to support and document.
+
+### 1. Bootstrap a machine or container
 
 ```bash
 git clone https://github.com/alex-bezek/dotfiles.git ~/.dotfiles
@@ -11,26 +81,60 @@ cd ~/.dotfiles
 exec zsh
 ```
 
-## What's Installed
+That installs or wires up the base shell/tooling stack, then applies Claude config from [`claude/`](./claude).
 
-### Core (always installed)
-- **Oh My Zsh** - Zsh framework
-- **Powerlevel10k** - Beautiful zsh theme
-- **zsh-autosuggestions** - Fish-like autosuggestions
-- **zsh-syntax-highlighting** - Syntax highlighting in terminal
+### 2. Daily development
 
-### Linux Tools (when on Linux)
-- **Homebrew** - Package manager for Linux (optional but recommended)
-- **Modern CLI tools** via Homebrew: exa, bat, fzf, ripgrep, neovim, tmux, autojump
+The intended daily environment looks roughly like:
 
-### Kubernetes Tools (if kubectl present)
-- **krew** - kubectl plugin manager
-- **krew plugins**: ctx, ns, neat, tail
-- **kubecolor** - Colorized kubectl output
+- Ghostty + tmux as the terminal/session layer
+- LazyGit for Git review, staging, history, and branch operations
+- Starship for prompt context
+- `nvim` as the default editor
+- Kubernetes helpers available when `kubectl` is present
+- Claude Code available with custom hooks, skills, and notes/memory workflow
 
-## Use with Devcontainers
+The shell config makes the infra/Kubernetes/Go bias fairly obvious:
 
-Add to your project's `.devcontainer/devcontainer.json`:
+- `EDITOR=nvim`
+- `KUBE_EDITOR=code --wait` on local macOS, `nvim` elsewhere
+- `kubectl`/`kubecolor` helpers
+- AWS/ngrok-specific environment defaults
+
+### 3. Evolve the setup itself
+
+There is a deliberate loop for changing the toolchain over time:
+
+- change files in this repo
+- re-run `./install.sh` or `./claude/refresh.sh`
+- use [`claude/verify.sh`](./claude/verify.sh) to confirm the Claude setup still matches expectations
+- keep broader future ideas in [`BACKLOG.md`](./BACKLOG.md) and Claude-specific ones in [`claude/BACKLOG.md`](./claude/BACKLOG.md)
+
+That is intentional: this repo is both automation and a running record of improvements still worth making.
+
+## Repository Map
+
+| Path | Purpose |
+|------|---------|
+| [install.sh](./install.sh) | Main cross-environment installer |
+| [BACKLOG.md](./BACKLOG.md) | Repo-wide improvements, experiments, and future work |
+| [.zshrc](./.zshrc) | Shared shell environment |
+| [ghostty/config](./ghostty/config) | Terminal configuration |
+| [tmux/tmux.conf](./tmux/tmux.conf) | Session management and terminal multiplexing |
+| [tmux/CHEATSHEET.md](./tmux/CHEATSHEET.md) | Small workflow-oriented tmux reference |
+| [starship/starship.toml](./starship/starship.toml) | Prompt configuration |
+| [lazygit/config.yml](./lazygit/config.yml) | Shared LazyGit defaults for terminal Git review |
+| [lazygit/CHEATSHEET.md](./lazygit/CHEATSHEET.md) | Small LazyGit reference for local and remote use |
+| [nvim/CHEATSHEET.md](./nvim/CHEATSHEET.md) | Neovim/LazyVim beginner cheatsheet and personal notes |
+| [claude/README.md](./claude/README.md) | Claude Code setup and workflows |
+| [claude/TIPS.md](./claude/TIPS.md) | Habit-building reference for Claude features |
+| [claude/BACKLOG.md](./claude/BACKLOG.md) | Claude-specific planned, experimental, and unfinished work |
+
+## Installation Notes
+
+### Devcontainers
+
+Example `.devcontainer/devcontainer.json`:
 
 ```json
 {
@@ -44,37 +148,20 @@ Add to your project's `.devcontainer/devcontainer.json`:
 }
 ```
 
-Or if using GitHub Codespaces dotfiles feature, just set this repo as your dotfiles repository in GitHub settings.
+### GitHub Codespaces
 
-## Use with GitHub Codespaces
+1. Go to `https://github.com/settings/codespaces`
+2. Set the dotfiles repository to `alex-bezek/dotfiles`
+3. Set the install command to `./install.sh`
 
-1. Go to https://github.com/settings/codespaces
-2. Set **Dotfiles repository** to: `alex-bezek/dotfiles`
-3. Set **Dotfiles install command** to: `./install.sh`
-4. Your next Codespace will automatically use these dotfiles
+## Local Overrides
 
-## Configuration
+Use untracked local files for machine-specific tweaks:
 
-The `.zshrc` adapts to your environment:
+- `~/.zshrc.local`
+- `~/.claude/settings.local.json`
 
-### Editor Selection
-- Uses `nvim` in Codespaces/containers (detected via `$CODESPACES` or missing `code` binary)
-- Uses VS Code (`code`) on macOS
-
-### Custom Git SSH Key
-Place your key at `~/.ssh/github_key` and it will be auto-configured.
-
-### Environment Variables
-Default values can be overridden via environment variables:
-
-```bash
-export AWS_PROFILE="production"
-export NGROK_ENV="staging"
-export NGROK_EMAIL="alex@ngrok.com"
-```
-
-### Local Overrides
-Create `~/.zshrc.local` for machine-specific config:
+Example:
 
 ```bash
 # ~/.zshrc.local
@@ -82,77 +169,26 @@ export AWS_PROFILE="my-profile"
 alias k="kubectl --context=prod"
 ```
 
-Then add to the end of `.zshrc`:
-```bash
-[ -f ~/.zshrc.local ] && source ~/.zshrc.local
-```
+## Things Still To Do
 
-## Shell Aliases & Functions
+This project will keep growing. A few categories are intentionally incomplete:
 
-### Git
-```bash
-gs          # git status
-gd          # git diff (with bat if available)
-gdt         # git diff (with difftastic if available)
-gc "msg"    # git add . && git commit -m "msg"
-gp          # git push to current branch
-ga "msg"    # commit and push in one command
-```
+- Better parity across macOS, Linux, Codespaces, and devcontainers
+- More verification around non-Claude shell/tooling setup
+- More explicit classification of what is "stable" vs "experimental"
+- More automation around AI tool installation and workflow validation
+- Repo-wide ideas and experiments live in [`BACKLOG.md`](./BACKLOG.md).
+- Claude-specific improvements live in [`claude/BACKLOG.md`](./claude/BACKLOG.md).
 
-### Kubernetes
-```bash
-k           # kubecolor (colored kubectl)
-kctx        # kubectl ctx (switch contexts)
-kns         # kubectl ns (switch namespaces)
-```
+## Git Review Recommendation
 
-### File Operations
-```bash
-ls          # exa with colors and icons (if installed)
-cat         # bat with syntax highlighting (if installed)
-vi          # nvim
-h           # history search with fzf (if installed)
-```
+For the workflow you described, `lazygit` is the right primary tool.
 
-### Custom Functions
-```bash
-nds staging     # Set NGROK_ENV variable (shown in prompt)
-t 2             # tree with depth 2
-```
+- It works the same on macOS, Linux, Codespaces, and SSH/EC2 boxes
+- It gives you a real TUI for diffs, staging, history, rebases, and branch flow
+- It pairs cleanly with `tmux`, which is the practical way to manage several machines or repos at once
 
-## Powerlevel10k Configuration
-
-After first install, run:
-```bash
-p10k configure
-```
-
-This will guide you through customizing your prompt. The configuration is saved to `~/.p10k.zsh`.
-
-## Troubleshooting
-
-### Fonts not rendering correctly
-Install a [Nerd Font](https://www.nerdfonts.com/) (like MesloLGS NF) and set it in your terminal.
-
-### Homebrew on Linux
-If you skipped Homebrew during install, you can install it later:
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-
-Then add to your `.zshrc`:
-```bash
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-```
-
-### kubectl not found
-Your devcontainer should install kubectl. If not, install it via your devcontainer features or manually.
-
-### Permission denied when changing shell
-Run manually:
-```bash
-sudo chsh -s $(which zsh) $USER
-```
+What it does not give you is a true single unified multi-repo pane across multiple remote hosts. For that, Mac GUI apps can help locally, but they break the moment the source of truth lives inside a remote shell. For this repo, the stronger default is consistency everywhere rather than a richer GUI on only one machine.
 
 ## Updating
 
@@ -161,10 +197,6 @@ cd ~/.dotfiles
 git pull
 ./install.sh
 ```
-
-## What About macOS?
-
-Your Mac is already set up! This repo primarily helps replicate your Mac environment in Linux devcontainers, Codespaces, and EC2 instances. The install script works on macOS but is optimized for Linux usage.
 
 ## License
 

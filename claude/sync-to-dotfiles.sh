@@ -47,6 +47,7 @@ if [ -d "$CLAUDE_DIR/skills" ]; then
     skill_name=$(basename "$skill_dir")
     # Only sync skills that exist in dotfiles (don't pull in project-specific ones)
     if [ -d "$SCRIPT_DIR/skills/$skill_name" ] && [ ! -L "$skill_dir" ]; then
+      rm -rf "$SCRIPT_DIR/skills/$skill_name"
       cp -r "$skill_dir" "$SCRIPT_DIR/skills/$skill_name"
       echo "  Synced skill: $skill_name (was modified locally)"
       changed=$((changed + 1))

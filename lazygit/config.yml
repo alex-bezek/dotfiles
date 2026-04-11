@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/jesseduffield/lazygit/master/schema/config.json
+
+gui:
+  border: rounded
+  expandFocusedSidePanel: true
+  enlargedSideViewLocation: left
+  mainPanelSplitMode: flexible
+  nerdFontsVersion: "3"
+  showBottomLine: true
+  showCommandLog: false
+  showFileIcons: true
+  showFileTree: true
+  showListFooter: false
+  showNumstatInFilesView: true
+  showPanelJumps: false
+  showRandomTip: false
+  sidePanelWidth: 0.28
+git:
+  pagers:
+    - colorArg: always
+      pager: ""
+refresher:
+  fetchInterval: 300
+  refreshInterval: 10

@@ -28,16 +28,6 @@ install_ohmyzsh() {
   fi
 }
 
-install_powerlevel10k() {
-  P10K_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
-  if [[ ! -d "$P10K_DIR" ]]; then
-    echo "💎 Installing Powerlevel10k..."
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$P10K_DIR"
-  else
-    echo "✅ Powerlevel10k already installed"
-  fi
-}
-
 install_zsh_plugins() {
   echo "💎 Installing Zsh plugins..."
 
@@ -56,6 +46,20 @@ install_zsh_plugins() {
   fi
 }
 
+install_lazyvim() {
+  if [[ ! -d "$HOME/.config/nvim" ]]; then
+    echo "📝 Cloning LazyVim starter..."
+    git clone https://github.com/LazyVim/starter "$HOME/.config/nvim"
+    # Remove git history so you can push to your own repo
+    rm -rf "$HOME/.config/nvim/.git"
+    echo "✅ LazyVim starter cloned to ~/.config/nvim"
+    echo "   Run 'nvim' to bootstrap plugins on first launch"
+    echo "   Then: cd ~/.config/nvim && git init && git remote add origin <your-fork>"
+  else
+    echo "✅ LazyVim (~/.config/nvim) already present"
+  fi
+}
+
 install_linux_tools_apt() {
   echo "📦 Installing Linux tools via apt..."
 
@@ -66,7 +70,6 @@ install_linux_tools_apt() {
 
   sudo apt-get update -qq || true
 
-  # Core tools that are commonly available via apt
   sudo apt-get install -y -qq \
     curl wget git gh build-essential \
     fzf ripgrep jq tree neovim tmux autojump \
@@ -78,14 +81,13 @@ install_linux_tools_apt() {
     sudo apt-get install -y -qq batcat 2>/dev/null || true
   fi
 
-  # exa/eza - try eza first (newer), then exa
+  # exa/eza
   if ! command -v exa &> /dev/null && ! command -v eza &> /dev/null; then
     sudo apt-get install -y -qq eza 2>/dev/null || \
     sudo apt-get install -y -qq exa 2>/dev/null || true
   fi
 
-
-  # Node.js LTS (includes npm/npx) - needed for Amp and MCP servers
+  # Node.js LTS (needed for npm-based agents)
   if ! command -v npx &> /dev/null; then
     echo "📦 Installing Node.js LTS..."
     curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
@@ -96,7 +98,6 @@ install_linux_tools_apt() {
 install_linux_tools_brew() {
   echo "📦 Attempting Homebrew install for remaining tools..."
 
-  # Install Homebrew for Linux if not present
   if ! command -v brew &> /dev/null; then
     echo "📦 Installing Homebrew for Linux..."
     NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
@@ -111,8 +112,7 @@ install_linux_tools_brew() {
 
   if command -v brew &> /dev/null; then
     echo "📦 Installing CLI tools via Homebrew..."
-    # Only install what apt couldn't provide
-    for tool in exa bat; do
+    for tool in exa bat starship atuin lazygit sesh glow; do
       if ! command -v "$tool" &> /dev/null; then
         brew install "$tool" 2>/dev/null || echo "⚠️  $tool failed to install via brew"
       fi
@@ -123,21 +123,18 @@ install_linux_tools_brew() {
 install_linux_tools() {
   echo "📦 Installing Linux tools..."
 
-  # Prefer apt for speed and reliability in containers
   install_linux_tools_apt
 
-  # Only try Homebrew if we're missing key tools and not in a minimal container
   if [[ -z "$CODESPACES" ]] && [[ -z "$REMOTE_CONTAINERS" ]]; then
-    # Check if we're missing tools that apt couldn't provide
     local missing_tools=0
-    for tool in exa bat; do
-      if ! command -v "$tool" &> /dev/null && ! command -v "${tool}cat" &> /dev/null; then
+    for tool in starship atuin lazygit; do
+      if ! command -v "$tool" &> /dev/null; then
         ((missing_tools++))
       fi
     done
 
     if [[ $missing_tools -gt 0 ]]; then
-      read -t 10 -p "Install Homebrew for additional tools? [y/N] " -n 1 -r || REPLY="n"
+      read -t 10 -p "Install Homebrew for additional tools (starship, atuin, lazygit)? [y/N] " -n 1 -r || REPLY="n"
       echo
       if [[ $REPLY =~ ^[Yy]$ ]]; then
         install_linux_tools_brew
@@ -155,8 +152,46 @@ install_macos_tools() {
   fi
 
   echo "📦 Installing CLI tools via Homebrew..."
-  brew install exa bat fzf ripgrep jq tree neovim tmux autojump kubecolor node 2>/dev/null || \
-    echo "⚠️  Some tools failed to install via brew"
+  brew install \
+    eza bat fzf ripgrep jq tree neovim tmux autojump kubecolor node glow \
+    starship atuin lazygit sesh \
+    2>/dev/null || echo "⚠️  Some tools failed to install via brew"
+
+  # Carapace completions
+  brew install carapace 2>/dev/null || echo "⚠️  carapace install skipped"
+
+  # Nerd Font for Ghostty / terminal icons
+  echo "📦 Installing JetBrains Mono Nerd Font..."
+  brew install --cask font-jetbrains-mono-nerd-font 2>/dev/null || \
+    echo "⚠️  font-jetbrains-mono-nerd-font install skipped"
+
+  install_agents
+}
+
+install_agents() {
+  echo "🤖 Installing AI agents..."
+
+  # GitHub Copilot CLI extension
+  if command -v gh &> /dev/null; then
+    gh extension install github/gh-copilot 2>/dev/null || \
+      echo "✅ gh copilot already installed or skipped"
+  fi
+
+  # Charmbracelet Crush
+  brew install charmbracelet/tap/crush 2>/dev/null || \
+    echo "⚠️  crush install skipped"
+
+  # npm-based agents
+  if command -v npm &> /dev/null; then
+    npm install -g @openai/codex 2>/dev/null || echo "⚠️  codex install skipped"
+  fi
+
+  # opencode (check https://opencode.ai for latest install method)
+  brew install opencode-ai/tap/opencode 2>/dev/null || \
+    echo "⚠️  opencode install skipped (check https://opencode.ai for install instructions)"
+
+  # TODO: Amp (Sourcegraph) — check https://ampai.dev for current install method
+  echo "ℹ️  Amp: install manually from https://ampai.dev"
 }
 
 install_krew() {
@@ -196,7 +231,6 @@ install_kubecolor() {
     if command -v brew &> /dev/null; then
       brew install kubecolor
     else
-      # Install from GitHub releases
       KUBECOLOR_VERSION=$(curl -s https://api.github.com/repos/hidetatz/kubecolor/releases/latest | grep '"tag_name"' | sed -E 's/.*"v([^"]+)".*/\1/')
       OS_LOWER="$(uname -s | tr '[:upper:]' '[:lower:]')"
       ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64$/arm64/')"
@@ -206,7 +240,6 @@ install_kubecolor() {
       mv /tmp/kubecolor "$HOME/.local/bin/"
       chmod +x "$HOME/.local/bin/kubecolor"
 
-      # Add to PATH if not already there
       if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
         export PATH="$HOME/.local/bin:$PATH"
       fi
@@ -229,13 +262,53 @@ setup_git_hooks() {
 setup_symlinks() {
   echo "🔗 Creating symlinks..."
 
-  # Backup existing .zshrc if it exists and isn't a symlink
+  # .zshrc
   if [[ -f "$HOME/.zshrc" && ! -L "$HOME/.zshrc" ]]; then
     echo "📦 Backing up existing .zshrc to .zshrc.backup"
     mv "$HOME/.zshrc" "$HOME/.zshrc.backup"
   fi
-
   ln -sf "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
+
+  # Ghostty
+  mkdir -p "$HOME/.config/ghostty"
+  ln -sf "$DOTFILES_DIR/ghostty/config" "$HOME/.config/ghostty/config"
+
+  # tmux
+  mkdir -p "$HOME/.config/tmux"
+  ln -sf "$DOTFILES_DIR/tmux/tmux.conf" "$HOME/.config/tmux/tmux.conf"
+
+  # tmux theme (from active theme)
+  if [[ -f "$DOTFILES_DIR/themes/current" ]]; then
+    local theme
+    theme="$(cat "$DOTFILES_DIR/themes/current")"
+    if [[ -f "$DOTFILES_DIR/themes/$theme/tmux-colors.conf" ]]; then
+      ln -sf "$DOTFILES_DIR/themes/$theme/tmux-colors.conf" "$HOME/.config/tmux/theme.conf"
+    fi
+  fi
+
+  # Powerlevel10k config
+  ln -sf "$DOTFILES_DIR/p10k.zsh" "$HOME/.p10k.zsh"
+
+  # Starship
+  mkdir -p "$HOME/.config"
+  ln -sf "$DOTFILES_DIR/starship/starship.toml" "$HOME/.config/starship.toml"
+
+  # Lazygit
+  mkdir -p "$HOME/.config/lazygit"
+  ln -sf "$DOTFILES_DIR/lazygit/config.yml" "$HOME/.config/lazygit/config.yml"
+
+  # Lazygit on macOS uses ~/Library/Application Support/lazygit by default
+  mkdir -p "$HOME/Library/Application Support/lazygit"
+  ln -sf "$DOTFILES_DIR/lazygit/config.yml" "$HOME/Library/Application Support/lazygit/config.yml"
+
+  if [[ -f "$DOTFILES_DIR/themes/current" ]]; then
+    local theme
+    theme="$(cat "$DOTFILES_DIR/themes/current")"
+    if [[ -f "$DOTFILES_DIR/themes/$theme/lazygit-theme.yml" ]]; then
+      ln -sf "$DOTFILES_DIR/themes/$theme/lazygit-theme.yml" "$HOME/.config/lazygit/theme.yml"
+      ln -sf "$DOTFILES_DIR/themes/$theme/lazygit-theme.yml" "$HOME/Library/Application Support/lazygit/theme.yml"
+    fi
+  fi
 
   echo "✅ Symlinks created"
 }
@@ -254,23 +327,20 @@ set_zsh_default() {
   echo "🐚 Setting zsh as default shell..."
   ZSH_PATH="$(which zsh)"
 
-  # In Codespaces/containers/non-interactive environments (e.g. cloud-init), use sudo chsh
   if [[ -n "$CODESPACES" ]] || [[ -n "$REMOTE_CONTAINERS" ]] || [[ -f /.dockerenv ]] || [[ ! -t 0 ]]; then
     sudo chsh -s "$ZSH_PATH" "$(whoami)" || echo "⚠️  Could not set zsh as default"
   else
-    # On regular systems, try without sudo first
     chsh -s "$ZSH_PATH" 2>/dev/null || echo "⚠️  Could not set zsh as default (run 'chsh -s $ZSH_PATH' manually)"
   fi
 }
 
 main() {
   echo ""
-  echo "🎯 Focus: Oh My Zsh + Powerlevel10k + plugins"
+  echo "🎯 Stack: Ghostty + tmux + Starship + LazyVim + AI agents"
   echo ""
 
-  # Core installations (always run)
+  # Core shell
   install_ohmyzsh
-  install_powerlevel10k
   install_zsh_plugins
 
   # Platform-specific tools
@@ -279,6 +349,9 @@ main() {
   elif [[ "$OS" == "macos" ]]; then
     install_macos_tools
   fi
+
+  # LazyVim
+  install_lazyvim
 
   # Kubernetes tools (nice-to-have, may fail gracefully)
   if command -v kubectl &> /dev/null; then
@@ -289,10 +362,10 @@ main() {
     echo "⚠️  kubectl not found, skipping krew/kubecolor (install kubectl first if needed)"
   fi
 
-  # Global git hooks (secrets scanner, etc.)
+  # Global git hooks
   setup_git_hooks
 
-  # Setup dotfiles
+  # Symlinks for all configs
   setup_symlinks
   set_zsh_default
 
@@ -307,10 +380,14 @@ main() {
   echo "✨ Dotfiles setup complete!"
   echo ""
   echo "Next steps:"
-  echo "  1. Restart your terminal or run: exec zsh"
-  echo "  2. Run 'p10k configure' to customize Powerlevel10k"
+  echo "  1. Restart terminal (or: exec zsh)"
+  echo "  2. Open Ghostty — theme: $(cat "$DOTFILES_DIR/themes/current" 2>/dev/null || echo 'default')"
+  echo "  3. Run 'nvim' to bootstrap LazyVim plugins (first launch takes ~1 min)"
+  echo "  4. In tmux: prefix+T to open sesh session picker"
+  echo "  5. Run 'lg' inside any repo for the Lazygit UI"
+  echo "  6. Install JetBrains Mono Nerd Font in Ghostty if icons look broken"
   if [[ "$OS" == "linux" ]] && command -v brew &> /dev/null; then
-    echo "  3. Add Homebrew to your path if needed:"
+    echo "  7. Add Homebrew to your path if needed:"
     echo "     echo 'eval \"\$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)\"' >> ~/.zshrc"
   fi
   echo ""

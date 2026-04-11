@@ -2,6 +2,13 @@
 
 Portable Claude Code setup managed via dotfiles. Run `./install-claude.sh` to symlink everything into `~/.claude/`.
 
+This directory is both:
+
+- the source of truth for the Claude setup I actively use
+- a place to document workflow patterns, incomplete ideas, and future automation
+
+So this should read as an evolving operating manual, not a finished product.
+
 ## What's Configured
 
 ### Global Instructions (`CLAUDE.md`)
@@ -45,6 +52,7 @@ Displays: `[Opus] branch-name (N changed) | [####----------------] 20% | $1.47`
 | `/focus` | `/focus CD pipeline`, `/focus my API` | Load context for a workstream. Searches project notes in the brain and git history. |
 | `/note` | `/note`, `/note my-api` | Save or update project notes in the brain. Captures status, decisions, next steps. |
 | `/projects` | `/projects` | List all tracked projects with status and last activity. |
+| `/resurrect` | `/resurrect`, `/resurrect my-api` | Rehydrate context for a previously active project or task from stored notes. |
 
 ### Hooks
 
@@ -52,13 +60,16 @@ Displays: `[Opus] branch-name (N changed) | [####----------------] 20% | $1.47`
 |-------|--------|-------------|
 | `Notification` | `notify.sh` | Sends OS-native notification when Claude needs attention (macOS `osascript`, Linux `notify-send`, fallback `\a` bell) |
 | `PreToolUse` | `guard-destructive.sh` | Blocks `git push --force`, `git reset --hard`, `git clean -f`, and dangerous `rm -rf` targets. Suggests safer alternatives. |
+| `PreToolUse` | `guard-secrets.sh` | Blocks commits that appear to include secrets or staged `.env` files. |
 | `Setup` | `inject-context.sh` | Pulls brain at session start, shows tracked project count. |
+| `SessionEnd` | `brain-sync.sh push` | Pushes brain updates at the end of a session so notes stay synced across environments. |
 
 ### MCP Servers
 
 | Server | Type | Managed by | What it does |
 |--------|------|-----------|-------------|
 | Linear (`linear-server`) | HTTP | Installer (merged into `~/.claude.json`) | Issue tracking — list, create, update Linear issues/projects/cycles |
+| Playwright (`playwright`) | stdio via `npx` | Installer (merged into `~/.claude.json`) | Browser automation and verification inside Claude Code |
 | Slack (`claude.ai Slack`) | Built-in | Claude Code (auto-discovered) | Read channels/DMs, search messages, send messages |
 
 **Authentication**: Both servers require OAuth. Use them in a session and you'll be prompted to authenticate via browser, or run `/mcp` to manage connections.
@@ -66,6 +77,18 @@ Displays: `[Opus] branch-name (N changed) | [####----------------] 20% | $1.47`
 **`gh` CLI**: Used for GitHub operations (PRs, issues, checks) via Bash tool. Installed by the main `install.sh` on macOS (`brew`) and Linux (`apt`). The Claude installer warns if it's missing but doesn't install it.
 
 See [BACKLOG.md](BACKLOG.md) for planned improvements, ideas to explore, and completed items.
+
+## What This Makes Clear
+
+This setup is aimed at a pretty specific working style:
+
+- terminal-first development
+- Go-heavy backend/infrastructure work
+- Kubernetes, cloud, and CI-adjacent debugging
+- moving between local macOS and remote Linux environments
+- using Claude not just for implementation, but for review, memory, and workflow support
+
+What is intentionally not true: everything here is polished. Some parts are routine; some parts are experiments with docs and backlog so they do not get lost.
 
 ### Environments
 
@@ -132,6 +155,7 @@ claude/
 ├── statusline.sh                  # Status line script
 ├── skills/
 │   ├── review/SKILL.md            # /review — code review
+│   ├── resurrect/SKILL.md         # /resurrect — restore previous project context
 │   ├── verify/SKILL.md            # /verify — setup health check
 │   ├── sync-to-dotfiles/SKILL.md  # /sync-to-dotfiles — local → repo
 │   ├── sync-from-dotfiles/SKILL.md # /sync-from-dotfiles — repo → local
@@ -140,6 +164,7 @@ claude/
 │   └── projects/SKILL.md          # /projects — list tracked projects
 ├── hooks/
 │   ├── guard-destructive.sh       # Blocks force push, reset --hard, dangerous rm
+│   ├── guard-secrets.sh           # Blocks likely secrets from being committed
 │   ├── notify.sh                  # Platform-aware notifications
 │   ├── brain-sync.sh              # Git push/pull for brain repo
 │   └── inject-context.sh          # Setup: pull brain, show project count
@@ -157,3 +182,7 @@ claude/
 - **New MCP server**: Add `jq` merge logic to `install-claude.sh` under the MCP section
 - **Environment override**: Edit `settings.local.<env>.json` in dotfiles, re-run installer
 - **Project-specific config**: Use `CLAUDE.md`, `.claude/settings.json`, or agent files in the project repo
+
+## Ongoing Work
+
+This setup is expected to keep changing. Current gaps and ideas live in [BACKLOG.md](BACKLOG.md). That backlog is part of the design, not a sign that the repo is half-abandoned.

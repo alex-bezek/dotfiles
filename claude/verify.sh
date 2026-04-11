@@ -57,6 +57,7 @@ fi
 check "Status line configured" "jq -e '.statusLine.command' '$CLAUDE_DIR/settings.json'"
 check "Hooks configured" "jq -e '.hooks' '$CLAUDE_DIR/settings.json'"
 check "Setup hook configured" "jq -e '.hooks.Setup' '$CLAUDE_DIR/settings.json'"
+check "SessionEnd hook configured" "jq -e '.hooks.SessionEnd' '$CLAUDE_DIR/settings.json'"
 echo ""
 
 # --- Skills ---
@@ -65,6 +66,7 @@ check "/review skill exists" "[ -f '$CLAUDE_DIR/skills/review/SKILL.md' ]"
 check "/focus skill exists" "[ -f '$CLAUDE_DIR/skills/focus/SKILL.md' ]"
 check "/note skill exists" "[ -f '$CLAUDE_DIR/skills/note/SKILL.md' ]"
 check "/projects skill exists" "[ -f '$CLAUDE_DIR/skills/projects/SKILL.md' ]"
+check "/resurrect skill exists" "[ -f '$CLAUDE_DIR/skills/resurrect/SKILL.md' ]"
 check "/verify skill exists" "[ -f '$CLAUDE_DIR/skills/verify/SKILL.md' ]"
 check "/sync-to-dotfiles skill exists" "[ -f '$CLAUDE_DIR/skills/sync-to-dotfiles/SKILL.md' ]"
 check "/sync-from-dotfiles skill exists" "[ -f '$CLAUDE_DIR/skills/sync-from-dotfiles/SKILL.md' ]"
@@ -74,6 +76,8 @@ echo ""
 echo "Hooks:"
 check "guard-destructive.sh exists" "[ -f '$CLAUDE_DIR/hooks/guard-destructive.sh' ]"
 check "guard-destructive.sh is executable" "[ -x '$CLAUDE_DIR/hooks/guard-destructive.sh' ]"
+check "guard-secrets.sh exists" "[ -f '$CLAUDE_DIR/hooks/guard-secrets.sh' ]"
+check "guard-secrets.sh is executable" "[ -x '$CLAUDE_DIR/hooks/guard-secrets.sh' ]"
 check "notify.sh exists" "[ -f '$CLAUDE_DIR/hooks/notify.sh' ]"
 check "notify.sh is executable" "[ -x '$CLAUDE_DIR/hooks/notify.sh' ]"
 check "inject-context.sh exists" "[ -f '$CLAUDE_DIR/hooks/inject-context.sh' ]"
@@ -98,6 +102,7 @@ echo "MCP Servers:"
 CLAUDE_JSON="$HOME/.claude.json"
 if [ -f "$CLAUDE_JSON" ]; then
   check "Linear MCP configured" "jq -e '.mcpServers[\"linear-server\"]' '$CLAUDE_JSON'"
+  check "Playwright MCP configured" "jq -e '.mcpServers[\"playwright\"]' '$CLAUDE_JSON'"
 else
   echo "  ✗ ~/.claude.json not found (run Claude Code once first)"
   fail=$((fail + 1))
