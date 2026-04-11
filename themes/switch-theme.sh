@@ -54,21 +54,14 @@ if [[ -n "$ghostty_theme" ]]; then
   echo "  ✅ Ghostty → $ghostty_theme"
 fi
 
-# 3. Update Starship palette
-if [[ -n "$starship_palette" ]]; then
-  sed -i.bak "s/^palette = .*/palette = \"$starship_palette\"/" "$DOTFILES_DIR/starship/starship.toml"
-  rm -f "$DOTFILES_DIR/starship/starship.toml.bak"
-  echo "  ✅ Starship → $starship_palette"
-fi
-
-# 4. Update tmux theme symlink
+# 3. Update tmux theme symlink
 if [[ -f "$THEME_DIR/tmux-colors.conf" ]]; then
   mkdir -p "$HOME/.config/tmux"
   ln -sf "$THEME_DIR/tmux-colors.conf" "$HOME/.config/tmux/theme.conf"
   echo "  ✅ tmux → $THEME (reload with: tmux source ~/.config/tmux/tmux.conf)"
 fi
 
-# 5. Update Lazygit theme symlinks
+# 4. Update Lazygit theme symlinks
 if [[ -f "$THEME_DIR/lazygit-theme.yml" ]]; then
   mkdir -p "$HOME/.config/lazygit"
   mkdir -p "$HOME/Library/Application Support/lazygit"

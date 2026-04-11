@@ -2,6 +2,8 @@
 
 Portable Claude Code setup managed via dotfiles. Run `./install-claude.sh` to symlink everything into `~/.claude/`.
 
+Shared agent/platform planning now lives at the repo root in [`../README.md`](../README.md) and [`../BACKLOG.md`](../BACKLOG.md). This file and directory are for Claude-specific behavior, integrations, and constraints.
+
 This directory is both:
 
 - the source of truth for the Claude setup I actively use
@@ -76,7 +78,7 @@ Displays: `[Opus] branch-name (N changed) | [####----------------] 20% | $1.47`
 
 **`gh` CLI**: Used for GitHub operations (PRs, issues, checks) via Bash tool. Installed by the main `install.sh` on macOS (`brew`) and Linux (`apt`). The Claude installer warns if it's missing but doesn't install it.
 
-See [BACKLOG.md](BACKLOG.md) for planned improvements, ideas to explore, and completed items.
+See [BACKLOG.md](BACKLOG.md) for Claude-specific planned improvements, ideas to explore, and completed items. Shared agent-configuration work is tracked in [`../BACKLOG.md`](../BACKLOG.md).
 
 ## What This Makes Clear
 

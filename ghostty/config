@@ -10,15 +10,38 @@ window-padding-x = 8
 window-padding-y = 8
 background-opacity = 0.97
 
-# Shell integration (auto-detects zsh)
-shell-integration = detect
+# Make native Ghostty splits easier to distinguish at a glance.
+split-divider-color = #5a6bff
+unfocused-split-opacity = 1
+
+# Shell integration
+# Disabled because Ghostty's prompt-redraw integration can interfere with scrollback/redraw
+# behavior on macOS, especially when working over SSH with large command output.
+shell-integration = none
 
 # Tabs / windows
 window-title-font-family = JetBrainsMono Nerd Font
+keybind = global:f1=toggle_quick_terminal
+keybind = super+shift+s=write_scrollback_file:open
+
+# Quick terminal on the current macOS Space/screen.
+quick-terminal-position = center
+quick-terminal-size = 100%,100%
+quick-terminal-animation-duration = 0.08
+quick-terminal-space-behavior = move
+quick-terminal-autohide = true
 
 # Cursor
 cursor-style = bar
 cursor-style-blink = true
 
 # Scrollback
-scrollback-limit = 10000
+# Keep enough terminal history to inspect large command output without relying on a pager.
+# Ghostty measures this in bytes, not lines.
+scrollback-limit = 50000000
+
+# Auto-update
+# TODO: Switch back to `stable` once Ghostty 1.3.2 stable is released.
+# Using `tip` to pick up the scrollback-limit bug fix merged after 1.3.1.
+# Tracked: https://github.com/ghostty-org/ghostty/discussions/11846
+auto-update-channel = tip

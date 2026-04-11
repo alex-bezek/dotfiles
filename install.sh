@@ -112,7 +112,7 @@ install_linux_tools_brew() {
 
   if command -v brew &> /dev/null; then
     echo "📦 Installing CLI tools via Homebrew..."
-    for tool in exa bat starship atuin lazygit sesh glow; do
+    for tool in exa bat atuin lazygit sesh glow; do
       if ! command -v "$tool" &> /dev/null; then
         brew install "$tool" 2>/dev/null || echo "⚠️  $tool failed to install via brew"
       fi
@@ -127,20 +127,36 @@ install_linux_tools() {
 
   if [[ -z "$CODESPACES" ]] && [[ -z "$REMOTE_CONTAINERS" ]]; then
     local missing_tools=0
-    for tool in starship atuin lazygit; do
+    for tool in atuin lazygit; do
       if ! command -v "$tool" &> /dev/null; then
         ((missing_tools++))
       fi
     done
 
     if [[ $missing_tools -gt 0 ]]; then
-      read -t 10 -p "Install Homebrew for additional tools (starship, atuin, lazygit)? [y/N] " -n 1 -r || REPLY="n"
+      read -t 10 -p "Install Homebrew for additional tools (atuin, lazygit)? [y/N] " -n 1 -r || REPLY="n"
       echo
       if [[ $REPLY =~ ^[Yy]$ ]]; then
         install_linux_tools_brew
       fi
     fi
   fi
+}
+
+setup_macos_keyboard() {
+  echo "⌨️  Remapping Caps Lock → Control..."
+
+  # Remap Caps Lock (0x700000039) to Left Control (0x7000000E0) for the internal keyboard
+  # This mirrors: System Settings → Keyboard → Keyboard Shortcuts → Modifier Keys
+  defaults -currentHost write -g com.apple.keyboard.modifiermapping.0-0-0 -array \
+    '<dict>
+      <key>HIDKeyboardModifierMappingDst</key>
+      <integer>30064771299</integer>
+      <key>HIDKeyboardModifierMappingSrc</key>
+      <integer>30064771129</integer>
+    </dict>'
+
+  echo "  ✅ Caps Lock → Control (takes effect after logout/login)"
 }
 
 install_macos_tools() {
@@ -154,7 +170,7 @@ install_macos_tools() {
   echo "📦 Installing CLI tools via Homebrew..."
   brew install \
     eza bat fzf ripgrep jq tree neovim tmux autojump kubecolor node glow \
-    starship atuin lazygit sesh \
+    atuin lazygit sesh \
     2>/dev/null || echo "⚠️  Some tools failed to install via brew"
 
   # Carapace completions
@@ -289,10 +305,6 @@ setup_symlinks() {
   # Powerlevel10k config
   ln -sf "$DOTFILES_DIR/p10k.zsh" "$HOME/.p10k.zsh"
 
-  # Starship
-  mkdir -p "$HOME/.config"
-  ln -sf "$DOTFILES_DIR/starship/starship.toml" "$HOME/.config/starship.toml"
-
   # Lazygit
   mkdir -p "$HOME/.config/lazygit"
   ln -sf "$DOTFILES_DIR/lazygit/config.yml" "$HOME/.config/lazygit/config.yml"
@@ -336,7 +348,7 @@ set_zsh_default() {
 
 main() {
   echo ""
-  echo "🎯 Stack: Ghostty + tmux + Starship + LazyVim + AI agents"
+  echo "🎯 Stack: Ghostty + tmux + Powerlevel10k + LazyVim + AI agents"
   echo ""
 
   # Core shell
@@ -348,6 +360,7 @@ main() {
     install_linux_tools
   elif [[ "$OS" == "macos" ]]; then
     install_macos_tools
+    setup_macos_keyboard
   fi
 
   # LazyVim

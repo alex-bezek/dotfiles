@@ -60,7 +60,7 @@ The leader key is `Space`. Press it and wait — a popup (which-key) shows avail
 | `Space f` | Find/file commands |
 | `Space s` | Search commands |
 | `Space b` | Buffer (open file tabs) commands |
-| `Space e` | Open file explorer (neo-tree) sidebar |
+| `Space e` | Open the file tree/sidebar (neo-tree) |
 | `Space q` | Session/quit commands |
 | `Space g` | Git commands |
 | `Space l` | Lazy (plugin manager) |
@@ -73,7 +73,7 @@ The leader key is `Space`. Press it and wait — a popup (which-key) shows avail
 | `Space f f` | Find file by name |
 | `Space f r` | Recent files |
 | `Space s g` | Search/grep across all files |
-| `Space e` | Toggle file explorer sidebar |
+| `Space e` | Toggle the file tree/sidebar (use this to get back to the list of files) |
 | `Space b d` | Close current buffer (file tab) |
 | `H` / `L` | Switch to prev/next buffer tab |
 

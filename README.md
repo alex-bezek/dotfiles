@@ -14,11 +14,12 @@ It is not "finished." Some parts are stable and part of my normal loop; other pa
 The current stack is centered around:
 
 - Shell and CLI setup via `.zshrc` and `install.sh`
-- Terminal UX via Ghostty, tmux, and Starship
+- Terminal UX via Ghostty, tmux, and Powerlevel10k
 - Git review via LazyGit
 - Editor/bootstrap via LazyVim
 - Kubernetes/infra ergonomics
-- Claude Code setup, skills, hooks, and workflow docs in [`claude/`](./claude)
+- Shared agent/tooling planning in this root README and [`BACKLOG.md`](./BACKLOG.md)
+- Claude Code setup, skills, hooks, and provider-specific workflow docs in [`claude/`](./claude)
 
 If you only skim one thing after this file, read [`claude/README.md`](./claude/README.md).
 
@@ -47,7 +48,7 @@ The goal is not bit-for-bit sameness. The goal is a familiar working model every
 - `.zshrc` shell environment and aliases
 - Ghostty config
 - tmux config
-- Starship prompt
+- Powerlevel10k prompt
 - LazyGit config and cheatsheet
 - LazyVim bootstrap
 - Claude Code setup, hooks, skills, and session docs
@@ -56,7 +57,7 @@ The goal is not bit-for-bit sameness. The goal is a familiar working model every
 ### Active But Still Evolving
 
 - Cross-environment bootstrap quality
-- AI tooling and agent installation
+- AI tooling, shared agent configuration, and agent installation
 - Claude workflow automation
 - Brain/project-memory workflow
 - Verification and sync ergonomics
@@ -89,7 +90,7 @@ The intended daily environment looks roughly like:
 
 - Ghostty + tmux as the terminal/session layer
 - LazyGit for Git review, staging, history, and branch operations
-- Starship for prompt context
+- Powerlevel10k for the active `zsh` prompt
 - `nvim` as the default editor
 - Kubernetes helpers available when `kubectl` is present
 - Claude Code available with custom hooks, skills, and notes/memory workflow
@@ -108,7 +109,7 @@ There is a deliberate loop for changing the toolchain over time:
 - change files in this repo
 - re-run `./install.sh` or `./claude/refresh.sh`
 - use [`claude/verify.sh`](./claude/verify.sh) to confirm the Claude setup still matches expectations
-- keep broader future ideas in [`BACKLOG.md`](./BACKLOG.md) and Claude-specific ones in [`claude/BACKLOG.md`](./claude/BACKLOG.md)
+- keep shared agent/tooling ideas in [`BACKLOG.md`](./BACKLOG.md) and Claude-only items in [`claude/BACKLOG.md`](./claude/BACKLOG.md)
 
 That is intentional: this repo is both automation and a running record of improvements still worth making.
 
@@ -117,12 +118,12 @@ That is intentional: this repo is both automation and a running record of improv
 | Path | Purpose |
 |------|---------|
 | [install.sh](./install.sh) | Main cross-environment installer |
-| [BACKLOG.md](./BACKLOG.md) | Repo-wide improvements, experiments, and future work |
+| [BACKLOG.md](./BACKLOG.md) | Repo-wide improvements plus shared agent-configuration and parity work |
 | [.zshrc](./.zshrc) | Shared shell environment |
 | [ghostty/config](./ghostty/config) | Terminal configuration |
 | [tmux/tmux.conf](./tmux/tmux.conf) | Session management and terminal multiplexing |
 | [tmux/CHEATSHEET.md](./tmux/CHEATSHEET.md) | Small workflow-oriented tmux reference |
-| [starship/starship.toml](./starship/starship.toml) | Prompt configuration |
+| [p10k.zsh](./p10k.zsh) | Active Powerlevel10k prompt configuration for `zsh` |
 | [lazygit/config.yml](./lazygit/config.yml) | Shared LazyGit defaults for terminal Git review |
 | [lazygit/CHEATSHEET.md](./lazygit/CHEATSHEET.md) | Small LazyGit reference for local and remote use |
 | [nvim/CHEATSHEET.md](./nvim/CHEATSHEET.md) | Neovim/LazyVim beginner cheatsheet and personal notes |
@@ -176,8 +177,8 @@ This project will keep growing. A few categories are intentionally incomplete:
 - Better parity across macOS, Linux, Codespaces, and devcontainers
 - More verification around non-Claude shell/tooling setup
 - More explicit classification of what is "stable" vs "experimental"
-- More automation around AI tool installation and workflow validation
-- Repo-wide ideas and experiments live in [`BACKLOG.md`](./BACKLOG.md).
+- More automation around AI tool installation, shared agent parity, and workflow validation
+- Repo-wide and shared agent-configuration ideas live in [`BACKLOG.md`](./BACKLOG.md).
 - Claude-specific improvements live in [`claude/BACKLOG.md`](./claude/BACKLOG.md).
 
 ## Git Review Recommendation

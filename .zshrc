@@ -62,6 +62,9 @@ fi
 
 source $ZSH/oh-my-zsh.sh
 
+# Make filename and argument completion case-insensitive.
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+
 # Powerlevel10k prompt config with transient prompt support.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
@@ -119,11 +122,13 @@ alias t="tree --du -h -L"
 alias gs='git status'
 
 # bat/batcat - Ubuntu/Debian uses 'batcat' for bat
+# Use --paging=never so output stays in terminal scrollback (scroll with mouse, clear with Cmd+K).
+# Use \cat to bypass the alias when you need raw output.
 if command -v bat &> /dev/null; then
-  alias cat='bat'
+  alias cat='bat --paging=never'
   alias gd='git diff | bat'
 elif command -v batcat &> /dev/null; then
-  alias cat='batcat'
+  alias cat='batcat --paging=never'
   alias gd='git diff | batcat'
 else
   alias gd='git diff'
@@ -208,5 +213,3 @@ fi
 if command -v carapace &> /dev/null; then
   source <(carapace _carapace zsh)
 fi
-
-# Starship remains installed for optional cross-shell use, but zsh uses p10k.
