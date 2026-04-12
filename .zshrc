@@ -20,6 +20,7 @@ else
 fi
 
 export TERM="xterm-256color"
+export COLORTERM="truecolor"
 
 # Company-specific
 export NGROK_EMAIL="${NGROK_EMAIL:-alex@ngrok.com}"
