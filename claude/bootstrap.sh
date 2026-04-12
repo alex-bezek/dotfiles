@@ -19,6 +19,7 @@ echo "=== Claude Code Bootstrap ==="
 echo ""
 
 # --- Prerequisites ---
+# shellcheck disable=SC2043 # single-element loop is intentional, more prereqs may be added
 for cmd in git; do
   if ! command -v "$cmd" &>/dev/null; then
     echo "ERROR: $cmd is required but not installed."

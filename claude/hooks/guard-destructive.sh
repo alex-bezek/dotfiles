@@ -29,6 +29,7 @@ case "$command" in
 esac
 
 # Dangerous rm targets
+# shellcheck disable=SC2221,SC2222 # broader pattern intentionally catches narrower ones
 case "$command" in
   *"rm -rf /"*|*"rm -rf /Users"*|*"rm -rf /home"*|*"rm -rf /etc"*|*"rm -rf /var"*)
     deny "Blocked: dangerous rm -rf target."

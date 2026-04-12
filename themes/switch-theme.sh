@@ -30,6 +30,7 @@ THEME_DIR="$THEMES_DIR/$THEME"
 if [[ ! -d "$THEME_DIR" ]]; then
   echo "❌ Theme '$THEME' not found in $THEMES_DIR"
   echo "Available themes:"
+  # shellcheck disable=SC2011
   ls -1d "$THEMES_DIR"/*/ 2>/dev/null | xargs -I{} basename {}
   exit 1
 fi
@@ -40,6 +41,7 @@ if [[ ! -f "$THEME_DIR/theme.conf" ]]; then
 fi
 
 # Read theme.conf
+# shellcheck disable=SC1090 # theme.conf path is dynamic by design
 source <(grep -v '^#' "$THEME_DIR/theme.conf" | grep '=')
 
 echo "🎨 Switching to theme: $THEME"

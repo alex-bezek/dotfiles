@@ -107,6 +107,7 @@ LLM_PID=$!
 if [[ -t 1 ]]; then
   # Interactive terminal — show animated spinner
   mapfile -t VERBS < "$PROMPTS_DIR/spinner-verbs.txt"
+  # shellcheck disable=SC2207 # word splitting is intentional here for array reassignment
   VERBS=( $(printf '%s\n' "${VERBS[@]}" | awk 'BEGIN{srand()} {print rand()"\t"$0}' | sort -n | cut -f2-) )
   DOTS='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
   PURPLE='\033[35m'

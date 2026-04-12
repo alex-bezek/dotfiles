@@ -22,6 +22,7 @@ if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     CHANGES="${UNSTAGED} changed"
   fi
   # Unpushed commits (ahead of remote tracking branch)
+  # shellcheck disable=SC1083 # @{upstream} is git rev-list syntax, not bash
   AHEAD=$(git rev-list --count @{upstream}..HEAD 2>/dev/null || echo 0)
   if [ "$AHEAD" -gt 0 ] 2>/dev/null; then
     UNPUSHED="${AHEAD}↑"
@@ -32,7 +33,9 @@ fi
 FILLED=$((PCT / 5))
 EMPTY=$((20 - FILLED))
 BAR="["
+# shellcheck disable=SC2034 # i is a loop counter, value unused intentionally
 for i in $(seq 1 $FILLED); do BAR="${BAR}#"; done
+# shellcheck disable=SC2034
 for i in $(seq 1 $EMPTY); do BAR="${BAR}-"; done
 BAR="${BAR}]"
 

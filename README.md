@@ -126,6 +126,10 @@ There is a deliberate loop for changing the toolchain over time:
 
 That is intentional: this repo is both automation and a running record of improvements still worth making.
 
+### Contributing (humans and agents)
+
+All changes go through pull requests. See [`AGENTS.md`](./AGENTS.md) for branch workflow, naming conventions, and CI requirements. Direct pushes to master are blocked by a pre-push hook.
+
 ## Repository Map
 
 | Path | Purpose |

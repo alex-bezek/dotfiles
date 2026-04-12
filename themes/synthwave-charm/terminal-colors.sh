@@ -1,3 +1,5 @@
+# shellcheck shell=bash
+# shellcheck disable=SC1003 # backslash-backslash in printf is intentional escape sequences
 # Synthwave Everything — ANSI palette for non-Ghostty terminals (SSH, etc.)
 # Sets the terminal's base 16 colors + background/foreground via OSC sequences
 # so the theme looks correct even without Ghostty providing the palette.
