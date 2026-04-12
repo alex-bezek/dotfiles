@@ -21,24 +21,7 @@ else
   PROJECT=$(basename "$PWD")
 fi
 
-# Get iTerm tab name if available
-ITERM_TAB=""
-if [ "$TERM_PROGRAM" = "iTerm.app" ] || [ -n "$ITERM_SESSION_ID" ]; then
-  ITERM_TAB=$(osascript -e '
-    tell application "iTerm2"
-      tell current session of current tab of current window
-        return name of current tab of current window
-      end tell
-    end tell
-  ' 2>/dev/null)
-fi
-
-# Build title with project/tab context
-if [ -n "$ITERM_TAB" ] && [ "$ITERM_TAB" != "$PROJECT" ]; then
-  TITLE="Claude Code — $ITERM_TAB"
-else
-  TITLE="Claude Code — $PROJECT"
-fi
+TITLE="Claude Code — $PROJECT"
 
 # Sanitize to avoid shell injection
 MSG=$(echo "$MSG" | head -c 200 | tr "'" " " | tr '"' " " | tr '`' " " | tr '$' " ")
@@ -49,7 +32,7 @@ if [ "$(uname -s)" = "Darwin" ]; then
   if command -v terminal-notifier >/dev/null 2>&1; then
     terminal-notifier -title "$TITLE" -message "$MSG" \
       -sound Blow -group "claude-$$" \
-      -activate com.googlecode.iterm2
+      -activate com.mitchellh.ghostty
   else
     # Fallback to osascript (auto-dismisses)
     osascript -e "display notification \"$MSG\" with title \"$TITLE\" sound name \"Blow\"" 2>/dev/null

@@ -28,6 +28,17 @@ install_ohmyzsh() {
   fi
 }
 
+install_powerlevel10k() {
+  ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+
+  if [[ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]]; then
+    echo "💎 Installing Powerlevel10k..."
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$ZSH_CUSTOM/themes/powerlevel10k"
+  else
+    echo "✅ Powerlevel10k already installed"
+  fi
+}
+
 install_zsh_plugins() {
   echo "💎 Installing Zsh plugins..."
 
@@ -394,6 +405,7 @@ main() {
 
   # Core shell
   install_ohmyzsh
+  install_powerlevel10k
   install_zsh_plugins
 
   # LazyVim

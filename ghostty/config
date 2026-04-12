@@ -20,6 +20,10 @@ unfocused-split-opacity = 1
 # behavior on macOS, especially when working over SSH with large command output.
 shell-integration-features = no-sudo,no-title
 
+# Bell — show 🔔 on background tabs that fire a bell, plus dock badge.
+# Combined with shell precmd/preexec hooks this gives a "process finished" signal.
+bell-features = title,attention
+
 # Tabs / windows
 macos-titlebar-style = tabs
 window-title-font-family = JetBrainsMono Nerd Font
