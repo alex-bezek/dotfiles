@@ -14,6 +14,10 @@
 - Lead with the answer or action, not the reasoning.
 - Don't restate what I said — just do it.
 
+## System Safety
+- **NEVER** edit files inside `/Applications/`, `/System/`, or `/Library/`. These are macOS system and application bundle directories. Modifying them breaks code signing, corrupts apps, and can destabilize the OS.
+- For app customization (themes, dock, etc.), only modify user-level config files (e.g., `~/Library/`, plist files via `defaults write`, dotfiles).
+
 ## Code Style
 - Don't add features, refactor, or "improve" beyond what was asked.
 - Don't add abstractions for one-time operations. Three similar lines > premature abstraction.

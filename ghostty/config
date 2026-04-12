@@ -15,11 +15,13 @@ split-divider-color = #5a6bff
 unfocused-split-opacity = 1
 
 # Shell integration
-# Disabled because Ghostty's prompt-redraw integration can interfere with scrollback/redraw
+# Keep shell integration on so Ghostty can detect running processes (smart close prompts,
+# jump-to-prompt, etc.). Only disable prompt-redraw, which can interfere with scrollback
 # behavior on macOS, especially when working over SSH with large command output.
-shell-integration = none
+shell-integration-features = no-sudo,no-title
 
 # Tabs / windows
+macos-titlebar-style = tabs
 window-title-font-family = JetBrainsMono Nerd Font
 keybind = global:f1=toggle_quick_terminal
 keybind = super+shift+s=write_scrollback_file:open
@@ -30,6 +32,14 @@ quick-terminal-size = 100%,100%
 quick-terminal-animation-duration = 0.08
 quick-terminal-space-behavior = move
 quick-terminal-autohide = true
+
+# Clipboard
+copy-on-select = clipboard
+clipboard-trim-trailing-spaces = true
+
+# Mouse
+mouse-scroll-multiplier = 3
+mouse-hide-while-typing = true
 
 # Cursor
 cursor-style = bar
