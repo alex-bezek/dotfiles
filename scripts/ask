@@ -95,36 +95,40 @@ case "$BACKEND" in
 esac
 
 # ---------------------------------------------------------------------------
-# Execute with cycling spinner
+# Execute with cycling spinner (TTY only)
 # ---------------------------------------------------------------------------
 RESULT_FILE="$(mktemp)"
 trap 'rm -f "$RESULT_FILE"' EXIT
-
-# Load and shuffle spinner verbs (shared with other tools via spinner-verbs.txt)
-mapfile -t VERBS < "$PROMPTS_DIR/spinner-verbs.txt"
-VERBS=( $(printf '%s\n' "${VERBS[@]}" | awk 'BEGIN{srand()} {print rand()"\t"$0}' | sort -n | cut -f2-) )
-DOTS='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
-PURPLE='\033[35m'
-RESET='\033[0m'
 
 export SYSTEM PROMPT BACKEND
 bash -c "$(declare -f run_codex run_claude); $run_fn" > "$RESULT_FILE" 2>/dev/null &
 LLM_PID=$!
 
-# Cycle spinner dots + rotate verb every ~2 seconds
-VIDX=0
-DIDX=0
-TICKS=0
-while kill -0 "$LLM_PID" 2>/dev/null; do
-  printf "\r  ${PURPLE}%s${RESET} %s..." "${DOTS:$DIDX:1}" "${VERBS[$VIDX]}"
-  sleep 0.1
-  DIDX=$(( (DIDX + 1) % ${#DOTS} ))
-  TICKS=$((TICKS + 1))
-  if (( TICKS % 20 == 0 )); then
-    VIDX=$(( (VIDX + 1) % ${#VERBS[@]} ))
-  fi
-done
-printf "\r\033[K"
+if [[ -t 1 ]]; then
+  # Interactive terminal — show animated spinner
+  mapfile -t VERBS < "$PROMPTS_DIR/spinner-verbs.txt"
+  VERBS=( $(printf '%s\n' "${VERBS[@]}" | awk 'BEGIN{srand()} {print rand()"\t"$0}' | sort -n | cut -f2-) )
+  DOTS='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+  PURPLE='\033[35m'
+  RESET='\033[0m'
+
+  VIDX=0
+  DIDX=0
+  TICKS=0
+  while kill -0 "$LLM_PID" 2>/dev/null; do
+    printf "\r  ${PURPLE}%s${RESET} %s..." "${DOTS:$DIDX:1}" "${VERBS[$VIDX]}"
+    sleep 0.1
+    DIDX=$(( (DIDX + 1) % ${#DOTS} ))
+    TICKS=$((TICKS + 1))
+    if (( TICKS % 20 == 0 )); then
+      VIDX=$(( (VIDX + 1) % ${#VERBS[@]} ))
+    fi
+  done
+  printf "\r\033[K"
+else
+  # Non-TTY (Alfred, pipes, etc.) — wait silently
+  wait "$LLM_PID" 2>/dev/null
+fi
 wait "$LLM_PID" 2>/dev/null
 
 # ---------------------------------------------------------------------------
