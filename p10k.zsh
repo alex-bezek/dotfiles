@@ -55,6 +55,7 @@
     terraform               # terraform workspace (https://www.terraform.io)
     aws                     # aws profile (https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
     context                 # user@hostname
+    ask_backend             # active LLM backend for ? / ??
     nix_shell               # nix shell (https://nixos.org/nixos/nix-pills/developing-with-nix-shell.html)
     vim_shell               # vim shell indicator (:sh)
     time                    # current time
@@ -339,11 +340,13 @@
     fi
 
     # Styling for different parts of Git status.
-    local       meta='%7F' # white foreground
-    local      clean='%0F' # black foreground
-    local   modified='%0F' # black foreground
-    local  untracked='%0F' # black foreground
-    local conflicted='%1F' # red foreground
+    # NOTE: Use explicit hex colors instead of %NF base-16 escapes because
+    # many terminal themes (e.g. Synthwave Everything) remap palette 0 to white.
+    local       meta='%F{#B0A8C0}' # muted lavender
+    local      clean='%F{#0E0A1F}' # dark foreground
+    local   modified='%F{#0E0A1F}' # dark foreground
+    local  untracked='%F{#0E0A1F}' # dark foreground
+    local conflicted='%F{#FF2040}' # bright red foreground
 
     local res
 
@@ -1622,39 +1625,22 @@
   # Custom prefix.
   typeset -g POWERLEVEL9K_TIME_PREFIX='at '
 
-  # Example of a user-defined prompt segment. Function prompt_example will be called on every
-  # prompt if `example` prompt segment is added to POWERLEVEL9K_LEFT_PROMPT_ELEMENTS or
-  # POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS. It displays an icon and yellow text on red background
-  # greeting the user.
-  #
-  # Type `p10k help segment` for documentation and a more sophisticated example.
-  function prompt_example() {
-    p10k segment -b 1 -f 3 -i '⭐' -t 'hello, %n'
+  # ---------------------------------------------------------------------------
+  # ask_backend — shows which LLM backend `?` / `??` will use
+  # ---------------------------------------------------------------------------
+  function prompt_ask_backend() {
+    local backend="${ASK_BACKEND:-codex}"
+    local icon
+    case "$backend" in
+      codex)  icon='󰧑' ;;   # nf-md-robot
+      claude) icon='󰗣' ;;   # nf-md-cloud
+      *)      icon='?' ;;
+    esac
+    p10k segment -i "$icon" -t "$backend"
   }
-
-  # User-defined prompt segments may optionally provide an instant_prompt_* function. Its job
-  # is to generate the prompt segment for display in instant prompt. See
-  # https://github.com/romkatv/powerlevel10k/blob/master/README.md#instant-prompt.
-  #
-  # Powerlevel10k will call instant_prompt_* at the same time as the regular prompt_* function
-  # and will record all `p10k segment` calls it makes. When displaying instant prompt, Powerlevel10k
-  # will replay these calls without actually calling instant_prompt_*. It is imperative that
-  # instant_prompt_* always makes the same `p10k segment` calls regardless of environment. If this
-  # rule is not observed, the content of instant prompt will be incorrect.
-  #
-  # Usually, you should either not define instant_prompt_* or simply call prompt_* from it. If
-  # instant_prompt_* is not defined for a segment, the segment won't be shown in instant prompt.
-  function instant_prompt_example() {
-    # Since prompt_example always makes the same `p10k segment` calls, we can call it from
-    # instant_prompt_example. This will give us the same `example` prompt segment in the instant
-    # and regular prompts.
-    prompt_example
-  }
-
-  # User-defined prompt segments can be customized the same way as built-in segments.
-  typeset -g POWERLEVEL9K_EXAMPLE_FOREGROUND=3
-  typeset -g POWERLEVEL9K_EXAMPLE_BACKGROUND=1
-  # typeset -g POWERLEVEL9K_EXAMPLE_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  function instant_prompt_ask_backend() { prompt_ask_backend; }
+  typeset -g POWERLEVEL9K_ASK_BACKEND_FOREGROUND='#F8F7FF'
+  typeset -g POWERLEVEL9K_ASK_BACKEND_BACKGROUND='#322655'
 
   # Transient prompt works similarly to the builtin transient_rprompt option. It trims down prompt
   # when accepting a command line. Supported values:

@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>com.dotfiles.ask</string>
+	<key>category</key>
+	<string>Productivity</string>
+	<key>connections</key>
+	<dict>
+		<!-- ? → concise script -->
+		<key>11111111-1111-1111-1111-111111111111</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>22222222-2222-2222-2222-222222222222</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitowards</key>
+				<string></string>
+			</dict>
+		</array>
+		<!-- concise script → clipboard + notification -->
+		<key>22222222-2222-2222-2222-222222222222</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>33333333-3333-3333-3333-333333333333</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitowards</key>
+				<string></string>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>44444444-4444-4444-4444-444444444444</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitowards</key>
+				<string></string>
+			</dict>
+		</array>
+		<!-- ask → brief script -->
+		<key>55555555-5555-5555-5555-555555555555</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>66666666-6666-6666-6666-666666666666</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitowards</key>
+				<string></string>
+			</dict>
+		</array>
+		<!-- brief script → large type -->
+		<key>66666666-6666-6666-6666-666666666666</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>77777777-7777-7777-7777-777777777777</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitowards</key>
+				<string></string>
+			</dict>
+		</array>
+		<!-- explain → html script -->
+		<key>88888888-8888-8888-8888-888888888888</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>99999999-9999-9999-9999-999999999999</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitowards</key>
+				<string></string>
+			</dict>
+		</array>
+		<!-- html script → done notification -->
+		<key>99999999-9999-9999-9999-999999999999</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitowards</key>
+				<string></string>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Alex Bezek</string>
+	<key>description</key>
+	<string>Ask an LLM — three modes: concise (clipboard), quick fact (Large Type), verbose (browser)</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Ask LLM</string>
+	<key>objects</key>
+	<array>
+		<!-- ==================== ? (concise) ==================== -->
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>keyword</key>
+				<string>?</string>
+				<key>subtext</key>
+				<string>Concise answer copied to clipboard</string>
+				<key>text</key>
+				<string>Ask LLM (concise)</string>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>11111111-1111-1111-1111-111111111111</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$PATH"
+terminal-notifier -title "Ask LLM" -message "Thinking..." -contentImage "$HOME/code/dotfiles/alfred/ask.alfredworkflow/icon-thinking.png" -group "ask-llm" &gt;/dev/null 2&gt;&amp;1 &amp;
+"$HOME/code/dotfiles/scripts/ask" --concise --raw "{query}" 2>/dev/null</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>22222222-2222-2222-2222-222222222222</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>clipboardtext</key>
+				<string>{query}</string>
+				<key>transient</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.clipboard</string>
+			<key>uid</key>
+			<string>33333333-3333-3333-3333-333333333333</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>lastpathcomponent</key>
+				<false/>
+				<key>onlyshowifquerypopulated</key>
+				<true/>
+				<key>removeextension</key>
+				<false/>
+				<key>text</key>
+				<string>Answer copied to clipboard</string>
+				<key>title</key>
+				<string>Ask LLM</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.notification</string>
+			<key>uid</key>
+			<string>44444444-4444-4444-4444-444444444444</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<!-- ==================== ask (brief / quick fact) ==================== -->
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>keyword</key>
+				<string>ask</string>
+				<key>subtext</key>
+				<string>Quick answer shown in Large Type</string>
+				<key>text</key>
+				<string>Ask LLM (quick fact)</string>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>55555555-5555-5555-5555-555555555555</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$PATH"
+terminal-notifier -title "Ask LLM" -message "Thinking..." -contentImage "$HOME/code/dotfiles/alfred/ask.alfredworkflow/icon-thinking.png" -group "ask-llm" &gt;/dev/null 2&gt;&amp;1 &amp;
+"$HOME/code/dotfiles/scripts/ask" --brief --raw "{query}" 2>/dev/null</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>66666666-6666-6666-6666-666666666666</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>lastpathcomponent</key>
+				<false/>
+				<key>onlyshowifquerypopulated</key>
+				<true/>
+				<key>removeextension</key>
+				<false/>
+				<key>text</key>
+				<string>{query}</string>
+				<key>title</key>
+				<string>Ask LLM</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.largetype</string>
+			<key>uid</key>
+			<string>77777777-7777-7777-7777-777777777777</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<!-- ==================== explain (verbose / browser) ==================== -->
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>keyword</key>
+				<string>explain</string>
+				<key>subtext</key>
+				<string>Detailed explanation opened in browser</string>
+				<key>text</key>
+				<string>Ask LLM (explain)</string>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>88888888-8888-8888-8888-888888888888</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$PATH"
+terminal-notifier -title "Ask LLM" -message "Thinking..." -contentImage "$HOME/code/dotfiles/alfred/ask.alfredworkflow/icon-thinking.png" -group "ask-llm" &gt;/dev/null 2&gt;&amp;1 &amp;
+"$HOME/code/dotfiles/scripts/ask" --html --raw "{query}" 2>/dev/null</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>99999999-9999-9999-9999-999999999999</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>lastpathcomponent</key>
+				<false/>
+				<key>onlyshowifquerypopulated</key>
+				<false/>
+				<key>removeextension</key>
+				<false/>
+				<key>text</key>
+				<string>Explanation opened in browser</string>
+				<key>title</key>
+				<string>Ask LLM</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.notification</string>
+			<key>uid</key>
+			<string>AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string>Ask an LLM from Alfred — three modes:
+
+?        concise answer → clipboard
+ask      quick fact → Large Type overlay
+explain  detailed explanation → opens in browser
+
+Backend controlled by ASK_BACKEND env var (codex or claude).</string>
+	<key>uidata</key>
+	<dict>
+		<key>11111111-1111-1111-1111-111111111111</key>
+		<dict>
+			<key>xpos</key>
+			<integer>100</integer>
+			<key>ypos</key>
+			<integer>50</integer>
+		</dict>
+		<key>22222222-2222-2222-2222-222222222222</key>
+		<dict>
+			<key>xpos</key>
+			<integer>350</integer>
+			<key>ypos</key>
+			<integer>50</integer>
+		</dict>
+		<key>33333333-3333-3333-3333-333333333333</key>
+		<dict>
+			<key>xpos</key>
+			<integer>600</integer>
+			<key>ypos</key>
+			<integer>20</integer>
+		</dict>
+		<key>44444444-4444-4444-4444-444444444444</key>
+		<dict>
+			<key>xpos</key>
+			<integer>600</integer>
+			<key>ypos</key>
+			<integer>80</integer>
+		</dict>
+		<key>55555555-5555-5555-5555-555555555555</key>
+		<dict>
+			<key>xpos</key>
+			<integer>100</integer>
+			<key>ypos</key>
+			<integer>200</integer>
+		</dict>
+		<key>66666666-6666-6666-6666-666666666666</key>
+		<dict>
+			<key>xpos</key>
+			<integer>350</integer>
+			<key>ypos</key>
+			<integer>200</integer>
+		</dict>
+		<key>77777777-7777-7777-7777-777777777777</key>
+		<dict>
+			<key>xpos</key>
+			<integer>600</integer>
+			<key>ypos</key>
+			<integer>200</integer>
+		</dict>
+		<key>88888888-8888-8888-8888-888888888888</key>
+		<dict>
+			<key>xpos</key>
+			<integer>100</integer>
+			<key>ypos</key>
+			<integer>350</integer>
+		</dict>
+		<key>99999999-9999-9999-9999-999999999999</key>
+		<dict>
+			<key>xpos</key>
+			<integer>350</integer>
+			<key>ypos</key>
+			<integer>350</integer>
+		</dict>
+		<key>AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA</key>
+		<dict>
+			<key>xpos</key>
+			<integer>600</integer>
+			<key>ypos</key>
+			<integer>350</integer>
+		</dict>
+	</dict>
+	<key>version</key>
+	<string>2.0.0</string>
+	<key>webaddress</key>
+	<string>https://github.com/alex-bezek/dotfiles</string>
+</dict>
+</plist>

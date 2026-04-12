@@ -1,0 +1,212 @@
+#!/usr/bin/env bash
+#
+# ask — one-shot LLM inference from the terminal
+#
+# Usage:
+#   ask "how do I rebase onto main"          # explanation mode (default)
+#   ask --concise "git rebase command"       # bare-minimum, copy-paste output
+#   ask --brief "latest kubernetes version"  # quick 1-2 sentence fact
+#   ask --html "explain pod scheduling"      # verbose, opens in browser
+#   ask --backend claude "explain monads"    # override backend for this call
+#
+# Modes:
+#   --concise   Bare answer only (commands, values). No explanation.
+#   --brief     Short natural-language answer (1-2 sentences).
+#   --html      Verbose markdown rendered as HTML, opened in browser.
+#   --raw       Plain text output (no glow, no browser). For piping/Alfred.
+#   (default)   Verbose markdown rendered via glow in terminal.
+#
+# Environment:
+#   ASK_BACKEND   codex | claude   (default: codex)
+
+set -euo pipefail
+
+# ---------------------------------------------------------------------------
+# Config
+# ---------------------------------------------------------------------------
+BACKEND="${ASK_BACKEND:-codex}"
+MODE="verbose"
+RAW=false
+
+# ---------------------------------------------------------------------------
+# Args
+# ---------------------------------------------------------------------------
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --concise|-c)  MODE="concise"; shift ;;
+    --brief)       MODE="brief"; shift ;;
+    --html)        MODE="html"; shift ;;
+    --backend|-b)  BACKEND="$2"; shift 2 ;;
+    --raw|-r)      RAW=true; shift ;;
+    --)            shift; break ;;
+    *)             break ;;
+  esac
+done
+
+PROMPT="$*"
+if [[ -z "$PROMPT" ]]; then
+  echo "usage: ask [--concise|--brief|--html] [--raw] [--backend codex|claude] <question>" >&2
+  exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# System prompts (loaded from scripts/prompts/*.md)
+# ---------------------------------------------------------------------------
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROMPTS_DIR="$SCRIPT_DIR/prompts"
+
+case "$MODE" in
+  concise) SYSTEM="$(cat "$PROMPTS_DIR/concise.md")" ;;
+  brief)   SYSTEM="$(cat "$PROMPTS_DIR/brief.md")" ;;
+  *)       SYSTEM="$(cat "$PROMPTS_DIR/verbose.md")" ;;
+esac
+
+# ---------------------------------------------------------------------------
+# Backend dispatch
+# ---------------------------------------------------------------------------
+run_codex() {
+  local tmpfile
+  tmpfile="$(mktemp)"
+  codex exec \
+    --full-auto \
+    -s read-only \
+    -o "$tmpfile" \
+    "$SYSTEM
+
+$PROMPT" >/dev/null 2>&1
+  cat "$tmpfile"
+  rm -f "$tmpfile"
+}
+
+run_claude() {
+  claude -p \
+    --tools "" \
+    --system-prompt "$SYSTEM" \
+    "$PROMPT" 2>/dev/null
+}
+
+case "$BACKEND" in
+  codex)  run_fn=run_codex ;;
+  claude) run_fn=run_claude ;;
+  *)
+    echo "Unknown backend: $BACKEND (use codex or claude)" >&2
+    exit 1
+    ;;
+esac
+
+# ---------------------------------------------------------------------------
+# Execute with cycling spinner
+# ---------------------------------------------------------------------------
+RESULT_FILE="$(mktemp)"
+trap 'rm -f "$RESULT_FILE"' EXIT
+
+# Load and shuffle spinner verbs (shared with other tools via spinner-verbs.txt)
+mapfile -t VERBS < "$PROMPTS_DIR/spinner-verbs.txt"
+VERBS=( $(printf '%s\n' "${VERBS[@]}" | awk 'BEGIN{srand()} {print rand()"\t"$0}' | sort -n | cut -f2-) )
+DOTS='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+PURPLE='\033[35m'
+RESET='\033[0m'
+
+export SYSTEM PROMPT BACKEND
+bash -c "$(declare -f run_codex run_claude); $run_fn" > "$RESULT_FILE" 2>/dev/null &
+LLM_PID=$!
+
+# Cycle spinner dots + rotate verb every ~2 seconds
+VIDX=0
+DIDX=0
+TICKS=0
+while kill -0 "$LLM_PID" 2>/dev/null; do
+  printf "\r  ${PURPLE}%s${RESET} %s..." "${DOTS:$DIDX:1}" "${VERBS[$VIDX]}"
+  sleep 0.1
+  DIDX=$(( (DIDX + 1) % ${#DOTS} ))
+  TICKS=$((TICKS + 1))
+  if (( TICKS % 20 == 0 )); then
+    VIDX=$(( (VIDX + 1) % ${#VERBS[@]} ))
+  fi
+done
+printf "\r\033[K"
+wait "$LLM_PID" 2>/dev/null
+
+# ---------------------------------------------------------------------------
+# Render output
+# ---------------------------------------------------------------------------
+if [[ ! -s "$RESULT_FILE" ]]; then
+  echo "No response received." >&2
+  exit 1
+fi
+
+case "$MODE" in
+  html)
+    # Render markdown as styled HTML and open in browser
+    HTML_FILE="$(mktemp /tmp/ask-XXXXXX.html)"
+    MARKDOWN_CONTENT="$(cat "$RESULT_FILE")"
+    cat > "$HTML_FILE" <<'HTMLHEAD'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ask LLM</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    max-width: 720px; margin: 40px auto; padding: 0 20px;
+    background: #1a1a2e; color: #e0e0e8;
+    line-height: 1.6;
+  }
+  h1, h2, h3 { color: #a78bfa; }
+  code {
+    background: #2d2b55; padding: 2px 6px; border-radius: 4px;
+    font-family: "JetBrains Mono", "Fira Code", monospace; font-size: 0.9em;
+  }
+  pre {
+    background: #2d2b55; padding: 16px; border-radius: 8px;
+    overflow-x: auto; border-left: 3px solid #8B3DFF;
+  }
+  pre code { background: none; padding: 0; }
+  a { color: #00d9ff; }
+  ul, ol { padding-left: 1.5em; }
+  li { margin: 4px 0; }
+  strong { color: #f8f7ff; }
+  hr { border: none; border-top: 1px solid #43366e; margin: 24px 0; }
+  .header { color: #6E63FF; font-size: 0.85em; margin-bottom: 24px; }
+</style>
+</head>
+<body>
+<div class="header">Ask LLM</div>
+<div id="content"></div>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+HTMLHEAD
+    # Inject the markdown content as a JS string
+    printf 'const md = %s;\n' "$(printf '%s' "$MARKDOWN_CONTENT" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')" >> "$HTML_FILE"
+    cat >> "$HTML_FILE" <<'HTMLTAIL'
+try {
+  document.getElementById('content').innerHTML = marked.parse(md);
+} catch(e) {
+  // Fallback if marked.js fails to load (offline)
+  document.getElementById('content').innerHTML = '<pre>' + md.replace(/</g,'&lt;') + '</pre>';
+}
+</script>
+</body>
+</html>
+HTMLTAIL
+    open "$HTML_FILE"
+    ;;
+  verbose)
+    if [[ "$RAW" == true ]]; then
+      cat "$RESULT_FILE"
+      echo
+    elif command -v glow &>/dev/null; then
+      glow "$RESULT_FILE"
+    else
+      cat "$RESULT_FILE"
+      echo
+    fi
+    ;;
+  *)
+    # concise and brief — plain text
+    cat "$RESULT_FILE"
+    echo
+    ;;
+esac

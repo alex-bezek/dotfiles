@@ -112,7 +112,7 @@ install_linux_tools_brew() {
 
   if command -v brew &> /dev/null; then
     echo "📦 Installing CLI tools via Homebrew..."
-    for tool in exa bat atuin lazygit sesh glow; do
+    for tool in exa bat atuin lazygit sesh glow gum; do
       if ! command -v "$tool" &> /dev/null; then
         brew install "$tool" 2>/dev/null || echo "⚠️  $tool failed to install via brew"
       fi
@@ -169,7 +169,7 @@ install_macos_tools() {
 
   echo "📦 Installing CLI tools via Homebrew..."
   brew install \
-    eza bat fzf ripgrep jq tree neovim tmux autojump kubecolor node glow \
+    eza bat fzf ripgrep jq tree neovim tmux autojump kubecolor node glow gum \
     atuin lazygit sesh \
     2>/dev/null || echo "⚠️  Some tools failed to install via brew"
 
@@ -321,6 +321,34 @@ setup_symlinks() {
       ln -sf "$DOTFILES_DIR/themes/$theme/lazygit-theme.yml" "$HOME/Library/Application Support/lazygit/theme.yml"
     fi
   fi
+
+  # Alfred workflow (cp, not symlink — Alfred ignores symlinked plists)
+  if [[ "$OS" == "macos" ]]; then
+    # Detect Alfred's sync folder, fall back to default location
+    local alfred_sync
+    alfred_sync=$(defaults read com.runningwithcrayons.Alfred-Preferences5 syncfolder 2>/dev/null \
+      || defaults read com.runningwithcrayons.Alfred-Preferences syncfolder 2>/dev/null \
+      || echo "")
+    # Expand ~ in the path
+    alfred_sync="${alfred_sync/#\~/$HOME}"
+
+    local alfred_prefs=""
+    if [[ -n "$alfred_sync" && -d "$alfred_sync/Alfred.alfredpreferences" ]]; then
+      alfred_prefs="$alfred_sync/Alfred.alfredpreferences"
+    elif [[ -d "$HOME/Library/Application Support/Alfred/Alfred.alfredpreferences" ]]; then
+      alfred_prefs="$HOME/Library/Application Support/Alfred/Alfred.alfredpreferences"
+    fi
+
+    if [[ -n "$alfred_prefs" ]]; then
+      local alfred_wf_dir="$alfred_prefs/workflows/user.workflow.ask-llm"
+      mkdir -p "$alfred_wf_dir"
+      cp -f "$DOTFILES_DIR/alfred/ask.alfredworkflow/info.plist" "$alfred_wf_dir/info.plist"
+      echo "  Alfred Ask LLM workflow → $alfred_wf_dir"
+    fi
+  fi
+
+  # scripts dir
+  chmod +x "$DOTFILES_DIR/scripts/"* 2>/dev/null || true
 
   echo "✅ Symlinks created"
 }

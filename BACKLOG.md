@@ -23,12 +23,16 @@ Use [`claude/BACKLOG.md`](./claude/BACKLOG.md) only for Claude-specific capabili
 ### Ghostty
 
 - [ ] Switch `auto-update-channel` back to `stable` in `ghostty/config` once Ghostty 1.3.2 stable ships (scrollback bug fix — [#11846](https://github.com/ghostty-org/ghostty/discussions/11846))
+- [ ] Revisit `macos-option-as-alt = true` once nvim/tmux usage is established — needed if Alt-based keybindings become part of the workflow
+- [ ] Revisit `resize-overlay = never` after learning Ghostty split resize keybinds — may want to hide the overlay once comfortable
 
 ### Terminal & Session UX
 
 - [ ] Refine Ghostty/tmux/p10k docs so they describe the intended workflow together, not as isolated configs
 - [ ] Decide whether tmux session management should stay centered on `sesh` or expand to worktrees/project launch helpers
 - [ ] Improve fzf setup — richer keybindings/previews for files, directories, git history beyond the basic `h` alias
+  - e.g. `fd()` for interactive git diff browsing: `git diff --name-only | fzf --preview 'bat {-1} --color=always'`
+  - explore fzf-tab, fzf-git.sh, and other community integrations
 - [ ] Document when to use `git diff`, `gdt` (difftastic), and lazygit for review
 
 ### Editor & Dev Tools

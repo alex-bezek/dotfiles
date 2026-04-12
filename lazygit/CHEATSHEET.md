@@ -34,6 +34,7 @@ Run it inside a repo. In a remote box or Codespace, SSH in first, then run `lg` 
 | Key | What it does |
 |-----|-------------|
 | `j` / `k` | Move through files or commits |
+| `PgUp` / `PgDn` | Scroll the diff preview without switching panes |
 | `space` | Stage or unstage the selected hunk/line |
 | `v` | Start a range selection in a diff |
 | `a` | Select the whole hunk |

@@ -95,6 +95,19 @@ The intended daily environment looks roughly like:
 - Kubernetes helpers available when `kubectl` is present
 - Claude Code available with custom hooks, skills, and notes/memory workflow
 
+Quick LLM access is available without entering an interactive agent:
+
+| Shortcut | Where | Mode | Output |
+|----------|-------|------|--------|
+| `?` | Terminal | Concise | Copy-pasteable command/value |
+| `??` | Terminal | Verbose | Glow-rendered markdown |
+| `ask --brief` | Terminal | Quick fact | 1-2 sentence answer |
+| `?` | Alfred | Concise | Clipboard + notification |
+| `ask` | Alfred | Quick fact | Large Type overlay |
+| `explain` | Alfred | Verbose | Styled HTML in browser |
+
+Backend is configurable via `ASK_BACKEND` env var (`codex` or `claude`), shown in the p10k prompt.
+
 The shell config makes the infra/Kubernetes/Go bias fairly obvious:
 
 - `EDITOR=nvim`
@@ -130,6 +143,9 @@ That is intentional: this repo is both automation and a running record of improv
 | [claude/README.md](./claude/README.md) | Claude Code setup and workflows |
 | [claude/TIPS.md](./claude/TIPS.md) | Habit-building reference for Claude features |
 | [claude/BACKLOG.md](./claude/BACKLOG.md) | Claude-specific planned, experimental, and unfinished work |
+| [scripts/ask](./scripts/ask) | One-shot LLM inference from terminal or Alfred |
+| [scripts/prompts/](./scripts/prompts/) | System prompts and spinner verbs for `ask` |
+| [alfred/ask.alfredworkflow/](./alfred/ask.alfredworkflow/) | Alfred workflow for Ask LLM (3 modes) |
 
 ## Installation Notes
 

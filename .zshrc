@@ -151,6 +151,19 @@ alias ndcf='nd config run | fx'
 alias c='claude --enable-auto-mode'
 alias v='nvim'
 
+# LLM quick-ask — configurable via ASK_BACKEND (codex|claude)
+export ASK_BACKEND="${ASK_BACKEND:-codex}"
+_dotfiles_scripts="${0:A:h}"
+[[ "$_dotfiles_scripts" == */code/dotfiles ]] || _dotfiles_scripts="$HOME/code/dotfiles"
+
+# ? = concise (copy-paste ready), ?? = explanation mode
+# noglob prevents zsh from treating ? as a glob wildcard
+alias '?'='noglob _ask_concise'
+alias '??'='noglob _ask_explain'
+_ask_concise() { "$_dotfiles_scripts/scripts/ask" --concise "$*"; }
+_ask_explain() { "$_dotfiles_scripts/scripts/ask" "$*"; }
+alias ask="$_dotfiles_scripts/scripts/ask"
+
 function lazygit() {
   local config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/lazygit"
   local config_files="$config_dir/config.yml"
@@ -207,6 +220,9 @@ function nds() {
 # Atuin — shell history with sync (replaces ctrl+r)
 if command -v atuin &> /dev/null; then
   eval "$(atuin init zsh)"
+  # Unbind Atuin AI's ? keybinding — we use ? / ?? as LLM shell functions
+  bindkey -r '?' 2>/dev/null
+  bindkey '?' self-insert 2>/dev/null
 fi
 
 # Carapace — multi-shell completions
