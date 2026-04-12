@@ -3,6 +3,7 @@
 # Run this after install to check everything is wired up properly.
 
 CLAUDE_DIR="$HOME/.claude"
+# shellcheck disable=SC2034 # SCRIPT_DIR available for future use
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 pass=0
 fail=0

@@ -82,6 +82,7 @@ if [ -n "$ENV_FILES" ]; then
   fi
   FOUND=1
   echo "  .env file(s) staged for commit:"
+  # shellcheck disable=SC2001
   echo "$ENV_FILES" | sed 's/^/    /'
   echo ""
 fi

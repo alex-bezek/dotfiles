@@ -225,6 +225,7 @@ install_agents() {
 install_krew() {
   if [[ ! -d "${KREW_ROOT:-$HOME/.krew}" ]]; then
     echo "☸️  Installing krew..."
+    # shellcheck disable=SC2030 # OS is intentionally local to this subshell
     (
       set -x; cd "$(mktemp -d)" &&
       OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
@@ -287,6 +288,7 @@ setup_git_hooks() {
   fi
 }
 
+# shellcheck disable=SC2031 # global OS is not affected by the krew subshell
 setup_symlinks() {
   echo "🔗 Creating symlinks..."
 
@@ -390,6 +392,7 @@ set_zsh_default() {
   fi
 }
 
+# shellcheck disable=SC2031 # global OS is not affected by the krew subshell
 main() {
   echo ""
   echo "🎯 Stack: Ghostty + tmux + Powerlevel10k + LazyVim + AI agents"
@@ -451,4 +454,31 @@ main() {
   echo ""
 }
 
+# Status marker — written on both success and failure for remote debugging
+DOTFILES_STATUS_FILE="$HOME/.dotfiles-status"
+# shellcheck disable=SC2031 # global OS is not affected by the krew subshell
+_dotfiles_trap() {
+  local exit_code=$?
+  if [[ $exit_code -ne 0 ]]; then
+    {
+      echo "status: failed"
+      echo "exit_code: $exit_code"
+      echo "timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+      echo "platform: $OS"
+    } > "$DOTFILES_STATUS_FILE"
+    echo ""
+    echo "❌ Install failed (exit code $exit_code). Debug info:"
+    bash "$DOTFILES_DIR/scripts/dotfiles-debug.sh" 2>/dev/null || true
+  fi
+}
+trap _dotfiles_trap EXIT
+
 main "$@"
+
+# Write success marker (only reached if main completes without error)
+# shellcheck disable=SC2031 # global OS is not affected by the krew subshell
+cat > "$DOTFILES_STATUS_FILE" <<EOF
+status: success
+timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+platform: $OS
+EOF

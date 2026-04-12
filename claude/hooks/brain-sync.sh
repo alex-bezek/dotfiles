@@ -14,7 +14,7 @@ if [ ! -d "$BRAIN_DIR/.git" ]; then
   exit 0
 fi
 
-cd "$BRAIN_DIR"
+cd "$BRAIN_DIR" || exit 1
 
 case "$1" in
   pull)
