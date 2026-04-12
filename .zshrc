@@ -75,6 +75,11 @@ if [[ -f "$_dotfiles_theme_dir/themes/current" ]]; then
   _theme="$(<"$_dotfiles_theme_dir/themes/current")"
   [[ -f "$_dotfiles_theme_dir/themes/$_theme/p10k-colors.zsh" ]] && \
     source "$_dotfiles_theme_dir/themes/$_theme/p10k-colors.zsh"
+  # On non-Ghostty terminals (SSH, etc.), inject the ANSI palette via OSC escapes
+  # so background/foreground/base colors match the theme.
+  if [[ "$TERM_PROGRAM" != "ghostty" && -f "$_dotfiles_theme_dir/themes/$_theme/terminal-colors.sh" ]]; then
+    source "$_dotfiles_theme_dir/themes/$_theme/terminal-colors.sh"
+  fi
   unset _theme
 fi
 unset _dotfiles_theme_dir

@@ -49,6 +49,7 @@ install_zsh_plugins() {
 install_lazyvim() {
   if [[ ! -d "$HOME/.config/nvim" ]]; then
     echo "📝 Cloning LazyVim starter..."
+    mkdir -p "$HOME/.config"
     git clone https://github.com/LazyVim/starter "$HOME/.config/nvim"
     # Remove git history so you can push to your own repo
     rm -rf "$HOME/.config/nvim/.git"
@@ -71,7 +72,7 @@ install_linux_tools_apt() {
   sudo apt-get update -qq || true
 
   sudo apt-get install -y -qq \
-    curl wget git gh build-essential \
+    zsh curl wget git gh build-essential \
     fzf ripgrep jq tree neovim tmux autojump \
     2>/dev/null || echo "⚠️  Some apt packages failed to install"
 
@@ -90,8 +91,8 @@ install_linux_tools_apt() {
   # Node.js LTS (needed for npm-based agents)
   if ! command -v npx &> /dev/null; then
     echo "📦 Installing Node.js LTS..."
-    curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-    sudo apt-get install -y -qq nodejs
+    (curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash - && \
+      sudo apt-get install -y -qq nodejs) || echo "⚠️  Node.js install failed, continuing"
   fi
 }
 
@@ -129,7 +130,7 @@ install_linux_tools() {
     local missing_tools=0
     for tool in atuin lazygit; do
       if ! command -v "$tool" &> /dev/null; then
-        ((missing_tools++))
+        missing_tools=$((missing_tools + 1))
       fi
     done
 
@@ -310,15 +311,19 @@ setup_symlinks() {
   ln -sf "$DOTFILES_DIR/lazygit/config.yml" "$HOME/.config/lazygit/config.yml"
 
   # Lazygit on macOS uses ~/Library/Application Support/lazygit by default
-  mkdir -p "$HOME/Library/Application Support/lazygit"
-  ln -sf "$DOTFILES_DIR/lazygit/config.yml" "$HOME/Library/Application Support/lazygit/config.yml"
+  if [[ "$OS" == "macos" ]]; then
+    mkdir -p "$HOME/Library/Application Support/lazygit"
+    ln -sf "$DOTFILES_DIR/lazygit/config.yml" "$HOME/Library/Application Support/lazygit/config.yml"
+  fi
 
   if [[ -f "$DOTFILES_DIR/themes/current" ]]; then
     local theme
     theme="$(cat "$DOTFILES_DIR/themes/current")"
     if [[ -f "$DOTFILES_DIR/themes/$theme/lazygit-theme.yml" ]]; then
       ln -sf "$DOTFILES_DIR/themes/$theme/lazygit-theme.yml" "$HOME/.config/lazygit/theme.yml"
-      ln -sf "$DOTFILES_DIR/themes/$theme/lazygit-theme.yml" "$HOME/Library/Application Support/lazygit/theme.yml"
+      if [[ "$OS" == "macos" ]]; then
+        ln -sf "$DOTFILES_DIR/themes/$theme/lazygit-theme.yml" "$HOME/Library/Application Support/lazygit/theme.yml"
+      fi
     fi
   fi
 
@@ -379,17 +384,17 @@ main() {
   echo "🎯 Stack: Ghostty + tmux + Powerlevel10k + LazyVim + AI agents"
   echo ""
 
-  # Core shell
-  install_ohmyzsh
-  install_zsh_plugins
-
-  # Platform-specific tools
+  # Platform-specific tools (install before oh-my-zsh so zsh is available on Linux)
   if [[ "$OS" == "linux" ]]; then
     install_linux_tools
   elif [[ "$OS" == "macos" ]]; then
     install_macos_tools
     setup_macos_keyboard
   fi
+
+  # Core shell
+  install_ohmyzsh
+  install_zsh_plugins
 
   # LazyVim
   install_lazyvim
