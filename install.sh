@@ -84,8 +84,19 @@ install_linux_tools_apt() {
 
   sudo apt-get install -y -qq \
     zsh curl wget git gh build-essential \
-    fzf ripgrep jq tree neovim tmux autojump \
+    fzf ripgrep jq tree tmux autojump \
     2>/dev/null || echo "⚠️  Some apt packages failed to install"
+
+  # Neovim — apt ships ancient versions; LazyVim requires >= 0.11.
+  # Install from the official Neovim stable PPA for a current release.
+  if ! nvim --version 2>/dev/null | head -1 | grep -qE 'v0\.(1[1-9]|[2-9][0-9])|v[1-9]'; then
+    echo "📦 Installing Neovim (stable PPA)..."
+    sudo apt-get install -y -qq software-properties-common 2>/dev/null || true
+    sudo add-apt-repository -y ppa:neovim-ppa/stable 2>/dev/null && \
+      sudo apt-get update -qq && \
+      sudo apt-get install -y -qq neovim || \
+      echo "⚠️  Neovim PPA install failed — try: https://github.com/neovim/neovim/releases"
+  fi
 
   # bat is called 'batcat' on Ubuntu/Debian
   if ! command -v bat &> /dev/null; then
@@ -259,11 +270,11 @@ install_kubecolor() {
     if command -v brew &> /dev/null; then
       brew install kubecolor
     else
-      KUBECOLOR_VERSION=$(curl -s https://api.github.com/repos/hidetatz/kubecolor/releases/latest | grep '"tag_name"' | sed -E 's/.*"v([^"]+)".*/\1/')
+      KUBECOLOR_VERSION=$(curl -s https://api.github.com/repos/kubecolor/kubecolor/releases/latest | grep '"tag_name"' | sed -E 's/.*"v([^"]+)".*/\1/')
       OS_LOWER="$(uname -s | tr '[:upper:]' '[:lower:]')"
       ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64$/arm64/')"
 
-      curl -sL "https://github.com/hidetatz/kubecolor/releases/download/v${KUBECOLOR_VERSION}/kubecolor_${KUBECOLOR_VERSION}_${OS_LOWER}_${ARCH}.tar.gz" | tar xz -C /tmp
+      curl -sL "https://github.com/kubecolor/kubecolor/releases/download/v${KUBECOLOR_VERSION}/kubecolor_${KUBECOLOR_VERSION}_${OS_LOWER}_${ARCH}.tar.gz" | tar xz -C /tmp
       mkdir -p "$HOME/.local/bin"
       mv /tmp/kubecolor "$HOME/.local/bin/"
       chmod +x "$HOME/.local/bin/kubecolor"

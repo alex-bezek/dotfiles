@@ -70,8 +70,7 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Theme color overlay (managed by themes/switch-theme.sh)
-# ${0:A:h} resolves the symlink target's directory (works regardless of install location)
-_dotfiles_theme_dir="${0:A:h}"
+_dotfiles_theme_dir="${${:-$HOME/.zshrc}:A:h}"
 if [[ -f "$_dotfiles_theme_dir/themes/current" ]]; then
   _theme="$(<"$_dotfiles_theme_dir/themes/current")"
   [[ -f "$_dotfiles_theme_dir/themes/$_theme/p10k-colors.zsh" ]] && \
@@ -159,7 +158,9 @@ alias v='nvim'
 
 # LLM quick-ask — configurable via ASK_BACKEND (codex|claude)
 export ASK_BACKEND="${ASK_BACKEND:-codex}"
-_dotfiles_scripts="${0:A:h}"
+# Resolve dotfiles dir from the ~/.zshrc symlink (${0:A:h} is unreliable when
+# plugins or hooks overwrite $0 — e.g. inside direnv/devbox projects).
+_dotfiles_scripts="${${:-$HOME/.zshrc}:A:h}"
 
 # ? = concise (copy-paste ready), ?? = explanation mode
 # noglob prevents zsh from treating ? as a glob wildcard
