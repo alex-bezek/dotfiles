@@ -87,15 +87,20 @@ install_linux_tools_apt() {
     fzf ripgrep jq tree tmux autojump \
     2>/dev/null || echo "⚠️  Some apt packages failed to install"
 
-  # Neovim — apt ships ancient versions; LazyVim requires >= 0.11.
-  # Install from the official Neovim stable PPA for a current release.
+  # Neovim — apt and PPAs ship ancient versions on older Ubuntu; LazyVim
+  # requires >= 0.11.  Grab the official pre-built tarball from GitHub.
   if ! nvim --version 2>/dev/null | head -1 | grep -qE 'v0\.(1[1-9]|[2-9][0-9])|v[1-9]'; then
-    echo "📦 Installing Neovim (stable PPA)..."
-    sudo apt-get install -y -qq software-properties-common 2>/dev/null || true
-    sudo add-apt-repository -y ppa:neovim-ppa/stable 2>/dev/null && \
-      sudo apt-get update -qq && \
-      sudo apt-get install -y -qq neovim || \
-      echo "⚠️  Neovim PPA install failed — try: https://github.com/neovim/neovim/releases"
+    echo "📦 Installing Neovim (GitHub release)..."
+    local nvim_ver
+    nvim_ver=$(curl -s https://api.github.com/repos/neovim/neovim/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+    if [[ -n "$nvim_ver" ]]; then
+      curl -sL "https://github.com/neovim/neovim/releases/download/${nvim_ver}/nvim-linux-x86_64.tar.gz" \
+        | sudo tar xz -C /usr/local --strip-components=1 \
+        && echo "  ✅ Neovim ${nvim_ver} installed" \
+        || echo "⚠️  Neovim tarball install failed — see https://github.com/neovim/neovim/releases"
+    else
+      echo "⚠️  Could not fetch Neovim version — check network / GitHub API rate limit"
+    fi
   fi
 
   # bat is called 'batcat' on Ubuntu/Debian
