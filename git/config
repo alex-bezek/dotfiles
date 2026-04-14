@@ -1,0 +1,12 @@
+[user]
+	name = Alex Bezek
+	email = alex@ngrok.com
+[core]
+	autocrlf = input
+[push]
+	default = simple
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true

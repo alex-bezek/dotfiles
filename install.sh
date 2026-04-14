@@ -195,14 +195,18 @@ install_macos_tools() {
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   fi
 
-  echo "📦 Installing CLI tools via Homebrew..."
-  brew install \
-    eza bat fzf ripgrep jq tree neovim tmux autojump kubecolor node glow gum \
-    atuin lazygit sesh \
-    2>/dev/null || echo "⚠️  Some tools failed to install via brew"
-
-  # Carapace completions
-  brew install carapace 2>/dev/null || echo "⚠️  carapace install skipped"
+  echo "📦 Installing/upgrading CLI tools via Homebrew..."
+  local brew_tools=(
+    eza bat fzf ripgrep jq tree neovim tmux autojump kubecolor node glow gum
+    atuin lazygit sesh carapace
+  )
+  for tool in "${brew_tools[@]}"; do
+    if brew ls --versions "$tool" &>/dev/null; then
+      brew upgrade "$tool" 2>/dev/null || true
+    else
+      brew install "$tool" 2>/dev/null || echo "⚠️  $tool install skipped"
+    fi
+  done
 
   # Nerd Font for Ghostty / terminal icons
   echo "📦 Installing JetBrains Mono Nerd Font..."
@@ -329,6 +333,9 @@ setup_symlinks() {
       ln -sf "$DOTFILES_DIR/themes/$theme/tmux-colors.conf" "$HOME/.config/tmux/theme.conf"
     fi
   fi
+
+  # Git config
+  ln -sf "$DOTFILES_DIR/git/config" "$HOME/.gitconfig"
 
   # Powerlevel10k config
   ln -sf "$DOTFILES_DIR/p10k.zsh" "$HOME/.p10k.zsh"

@@ -219,6 +219,10 @@ function ga() {
   gp
 }
 
+ngrok_environment() {
+  [[ -n "$NGROK_ENV" ]] && echo -n "NGROK $NGROK_ENV"
+}
+
 function nds() {
   export NGROK_ENV="$1"
 }

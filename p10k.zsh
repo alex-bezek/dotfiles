@@ -52,6 +52,7 @@
     background_jobs         # presence of background jobs
     direnv                  # direnv status (https://direnv.net/)
     kubecontext             # current kubernetes context (https://kubernetes.io/)
+    custom_ngrok            # NGROK_ENV indicator (dev/stage/prod/infra)
     terraform               # terraform workspace (https://www.terraform.io)
     aws                     # aws profile (https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
     context                 # user@hostname
@@ -1624,6 +1625,13 @@
   # typeset -g POWERLEVEL9K_TIME_VISUAL_IDENTIFIER_EXPANSION='⭐'
   # Custom prefix.
   typeset -g POWERLEVEL9K_TIME_PREFIX='at '
+
+  # ---------------------------------------------------------------------------
+  # custom_ngrok — shows NGROK_ENV when set (dev/stage/prod/infra)
+  # ---------------------------------------------------------------------------
+  typeset -g POWERLEVEL9K_CUSTOM_NGROK="ngrok_environment"
+  typeset -g POWERLEVEL9K_CUSTOM_NGROK_FOREGROUND='#F8F7FF'
+  typeset -g POWERLEVEL9K_CUSTOM_NGROK_BACKGROUND='#0D6847'
 
   # ---------------------------------------------------------------------------
   # ask_backend — shows which LLM backend `?` / `??` will use
