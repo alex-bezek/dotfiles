@@ -233,8 +233,15 @@ install_agents() {
 
   # npm-based agents (cross-platform)
   if command -v npm &> /dev/null; then
-    npm install -g @openai/codex 2>/dev/null || echo "⚠️  codex install skipped"
-    npm install -g @sourcegraph/amp 2>/dev/null || echo "⚠️  amp install skipped"
+    # On Linux, npm global prefix is usually /usr which needs sudo.
+    # Set prefix to ~/.local so binaries land in ~/.local/bin (already in PATH).
+    local npm_args=()
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+      mkdir -p "$HOME/.local"
+      npm_args=(--prefix "$HOME/.local")
+    fi
+    npm install -g "${npm_args[@]}" @openai/codex || echo "⚠️  codex install failed"
+    npm install -g "${npm_args[@]}" @sourcegraph/amp || echo "⚠️  amp install failed"
   else
     echo "⚠️  npm not found — skipping codex and amp installs"
   fi
