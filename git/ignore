@@ -1,0 +1,9 @@
+# Global gitignore — symlinked to ~/.config/git/ignore
+Tiltfile
+.DS_Store
+*.swp
+*.swo
+*~
+.env
+.env.local
+.direnv/

@@ -3,6 +3,12 @@
 	email = alex@ngrok.com
 [core]
 	autocrlf = input
+	excludesfile = ~/.config/git/ignore
 [push]
 	default = simple
-
+[init]
+	defaultBranch = main
+# Platform-specific settings (credential.helper, core.editor, core.hooksPath)
+# are set by install.sh → setup_git_platform_config() in ~/.config/git/config
+[include]
+	path = ~/.config/git/config

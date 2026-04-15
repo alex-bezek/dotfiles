@@ -1,0 +1,132 @@
+{
+    "workbench.colorTheme": "SynthWave '84",
+    "workbench.iconTheme": "vscode-icons",
+    "workbench.editor.empty.hint": "hidden",
+
+    "editor.fontFamily": "Fira Code",
+    "editor.fontLigatures": true,
+    "editor.tabSize": 2,
+    "editor.formatOnType": true,
+    "editor.detectIndentation": false,
+    "editor.lineNumbers": "on",
+    "editor.wordWrap": "off",
+    "editor.wordBasedSuggestions": "off",
+    "editor.accessibilitySupport": "off",
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.guides.indentation": false,
+    "editor.codeActionsOnSave": {},
+
+    "terminal.integrated.fontFamily": "Hack Nerd Font",
+    "terminal.integrated.scrollback": 9999999,
+    "terminal.integrated.smoothScrolling": true,
+    "terminal.integrated.defaultProfile.linux": "zsh",
+
+    "explorer.confirmDragAndDrop": false,
+    "explorer.confirmDelete": false,
+    "explorer.confirmPasteNative": false,
+
+    "trailing-spaces.trimOnSave": true,
+    "diffEditor.ignoreTrimWhitespace": false,
+
+    "vscode_custom_css.imports": [
+        "https://raw.githubusercontent.com/robb0wen/synthwave-vscode/master/synthwave84.css"
+    ],
+
+    "go.useLanguageServer": true,
+    "go.toolsManagement.autoUpdate": true,
+
+    "vim.disableExtension": true,
+    "vim.useSystemClipboard": true,
+
+    "gitlens.keymap": "alternate",
+    "gitlens.ai.model": "vscode",
+    "gitlens.ai.vscode.model": "copilot:gpt-4.1",
+
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "javascript.updateImportsOnFileMove.enabled": "always",
+
+    "github.copilot.editor.enableAutoCompletions": true,
+    "github.copilot.nextEditSuggestions.enabled": true,
+
+    "claudeCode.preferredLocation": "panel",
+    "claudeCode.initialPermissionMode": "acceptEdits",
+    "claudeCode.useCtrlEnterToSend": true,
+
+    "remote.SSH.remotePlatform": {
+        "devbox-alex": "linux"
+    },
+    "remote.autoForwardPortsSource": "hybrid",
+
+    "direnv.watchForChanges": false,
+    "makefile.configureOnOpen": false,
+    "redhat.telemetry.enabled": true,
+    "vsicons.dontShowNewVersionMessage": true,
+
+    "cSpell.enabledLanguageIds": [
+        "c", "cpp", "css", "git-commit", "go", "html", "json", "jsonc",
+        "markdown", "plaintext", "python", "rust", "scss", "text",
+        "typescript", "typescriptreact", "yaml", "yml"
+    ],
+
+    "yaml.customTags": [
+        "!And", "!And sequence", "!If", "!If sequence",
+        "!Not", "!Not sequence", "!Equals", "!Equals sequence",
+        "!Or", "!Or sequence", "!FindInMap", "!FindInMap sequence",
+        "!Base64", "!Join", "!Join sequence", "!Cidr",
+        "!Ref", "!Sub", "!Sub sequence", "!GetAtt", "!GetAZs",
+        "!ImportValue", "!ImportValue sequence",
+        "!Select", "!Select sequence", "!Split", "!Split sequence"
+    ],
+
+    "[dockercompose]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.autoIndent": "advanced",
+        "editor.quickSuggestions": {
+            "other": true,
+            "comments": false,
+            "strings": true
+        },
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "[github-actions-workflow]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+
+    "amp.url": "https://ampcode.com/",
+    "amp.tab.enabled": true,
+    "amp.mcpServers": {
+        "playwright": {
+            "command": "npx",
+            "args": ["-y", "@playwright/mcp@latest", "--headless", "--isolated"]
+        }
+    },
+    "amp.permissions": [
+        {
+            "tool": "Bash", "action": "ask",
+            "matches": { "cmd": ["*rm*-rf*", "*rm*-r*--force*", "*rm*--force*-r*"] }
+        },
+        {
+            "tool": "Bash", "action": "ask",
+            "matches": { "cmd": ["*find*-exec*", "*find*-delete*"] }
+        },
+        {
+            "tool": "Bash", "action": "ask",
+            "matches": { "cmd": ["*git*push*--force*", "*git*push*-f*"] }
+        },
+        {
+            "tool": "Bash", "action": "ask",
+            "matches": { "cmd": ["sudo*", "su*", "*chmod*777*", "*chown*root*"] }
+        },
+        { "tool": "*", "action": "allow", "matches": {} }
+    ],
+
+    "json.schemaDownload.trustedDomains": {
+        "https://schemastore.azurewebsites.net/": true,
+        "https://raw.githubusercontent.com/": true,
+        "https://www.schemastore.org/": true,
+        "https://json.schemastore.org/": true,
+        "https://json-schema.org/": true,
+        "https://biomejs.dev": true
+    }
+}

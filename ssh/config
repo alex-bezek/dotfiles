@@ -1,0 +1,22 @@
+# SSH config managed by dotfiles
+# Symlinked to ~/.ssh/config
+#
+# Machine-specific hosts (devbox IPs, etc.) can be added to ~/.ssh/config.local
+# and will be included below.
+
+Include "config.local"
+
+# --- GitHub ---
+Host github.com *.github.com
+  IdentityFile ~/.ssh/ngrok_github_key
+  IdentitiesOnly yes
+  AddKeysToAgent yes
+
+# --- Defaults ---
+# Note: UseKeychain is macOS-only. If on Linux, add IgnoreUnknown UseKeychain
+# before it, or put it in config.local.
+Host *
+  IgnoreUnknown UseKeychain
+  UseKeychain yes
+  AddKeysToAgent yes
+  ServerAliveInterval 180

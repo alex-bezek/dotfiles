@@ -1,0 +1,19 @@
+# Machine-specific SSH hosts — not tracked in dotfiles.
+# Copy to ~/.ssh/config.local and customize.
+#
+# The main ssh/config includes this file automatically.
+
+# Example: devbox
+# Host devbox devbox-alex
+#   HostName 1.2.3.4
+#   User alex
+#   IdentityFile ~/.ssh/my_key
+#   IdentitiesOnly yes
+#   AddKeysToAgent yes
+#   ForwardAgent yes
+
+# Example: 1Password SSH agent
+# Host some-host*
+#   IdentityFile ~/.ssh/my_key
+#   IdentitiesOnly yes
+#   IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
