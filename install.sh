@@ -212,8 +212,6 @@ install_macos_tools() {
   echo "📦 Installing JetBrains Mono Nerd Font..."
   brew install --cask font-jetbrains-mono-nerd-font 2>/dev/null || \
     echo "⚠️  font-jetbrains-mono-nerd-font install skipped"
-
-  install_agents
 }
 
 install_agents() {
@@ -225,21 +223,21 @@ install_agents() {
       echo "✅ gh copilot already installed or skipped"
   fi
 
-  # Charmbracelet Crush
-  brew install charmbracelet/tap/crush 2>/dev/null || \
-    echo "⚠️  crush install skipped"
-
-  # npm-based agents
-  if command -v npm &> /dev/null; then
-    npm install -g @openai/codex 2>/dev/null || echo "⚠️  codex install skipped"
+  # Brew-only tools (macOS or Linux with Homebrew)
+  if command -v brew &> /dev/null; then
+    brew install charmbracelet/tap/crush 2>/dev/null || \
+      echo "⚠️  crush install skipped"
+    brew install opencode-ai/tap/opencode 2>/dev/null || \
+      echo "⚠️  opencode install skipped"
   fi
 
-  # opencode (check https://opencode.ai for latest install method)
-  brew install opencode-ai/tap/opencode 2>/dev/null || \
-    echo "⚠️  opencode install skipped (check https://opencode.ai for install instructions)"
-
-  # TODO: Amp (Sourcegraph) — check https://ampai.dev for current install method
-  echo "ℹ️  Amp: install manually from https://ampai.dev"
+  # npm-based agents (cross-platform)
+  if command -v npm &> /dev/null; then
+    npm install -g @openai/codex 2>/dev/null || echo "⚠️  codex install skipped"
+    npm install -g @sourcegraph/amp 2>/dev/null || echo "⚠️  amp install skipped"
+  else
+    echo "⚠️  npm not found — skipping codex and amp installs"
+  fi
 }
 
 install_krew() {
@@ -459,6 +457,9 @@ main() {
   else
     echo "⚠️  kubectl not found, skipping krew/kubecolor (install kubectl first if needed)"
   fi
+
+  # AI agents (cross-platform: npm-based tools + brew where available)
+  install_agents
 
   # Global git hooks
   setup_git_hooks
