@@ -54,6 +54,10 @@ BRAIN_LOCAL="$HOME/code/claude-brain"
 BRAIN_LINK="$CLAUDE_DIR/brain"
 
 if [ ! -d "$BRAIN_LOCAL" ]; then
+  # Pre-add GitHub's SSH host key so the clone doesn't prompt interactively
+  mkdir -p "$HOME/.ssh"
+  ssh-keyscan -t ed25519 github.com >> "$HOME/.ssh/known_hosts" 2>/dev/null || true
+
   git clone "$BRAIN_REPO" "$BRAIN_LOCAL" --quiet 2>/dev/null || \
     echo "  ⚠  Could not clone brain repo — clone manually: git clone $BRAIN_REPO $BRAIN_LOCAL"
 fi
