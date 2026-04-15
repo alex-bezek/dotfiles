@@ -302,8 +302,14 @@ setup_git_hooks() {
   HOOKS_DIR="$DOTFILES_DIR/git/hooks"
 
   if [[ -d "$HOOKS_DIR" ]]; then
-    git config --global core.hooksPath "$HOOKS_DIR"
-    echo "  core.hooksPath -> $HOOKS_DIR"
+    # Copy hooks to a stable location instead of pointing to the dotfiles clone
+    # (which may live at different paths on different machines)
+    local dest="$HOME/.config/git/hooks"
+    mkdir -p "$dest"
+    cp -f "$HOOKS_DIR"/* "$dest/" 2>/dev/null || true
+    chmod +x "$dest"/* 2>/dev/null || true
+    git config --global core.hooksPath "$dest"
+    echo "  core.hooksPath -> $dest"
   fi
 }
 
@@ -336,6 +342,17 @@ setup_symlinks() {
 
   # Git config
   ln -sf "$DOTFILES_DIR/git/config" "$HOME/.gitconfig"
+
+  # git-lfs filter: only enable if git-lfs is installed (required=true breaks
+  # all git operations when git-lfs is missing)
+  if command -v git-lfs &> /dev/null; then
+    git config --global filter.lfs.required true
+  else
+    git config --global --unset filter.lfs.required 2>/dev/null || true
+    git config --global --unset filter.lfs.clean 2>/dev/null || true
+    git config --global --unset filter.lfs.smudge 2>/dev/null || true
+    git config --global --unset filter.lfs.process 2>/dev/null || true
+  fi
 
   # Powerlevel10k config
   ln -sf "$DOTFILES_DIR/p10k.zsh" "$HOME/.p10k.zsh"
